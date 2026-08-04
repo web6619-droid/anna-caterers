@@ -21,11 +21,13 @@ import {
   AlertCircle, 
   Info, 
   Menu, 
-  X 
+  X,
+  ClipboardList
 } from "lucide-react";
 
 // Import modular dashboard tab views
 import OverviewTab from "@/components/admin/OverviewTab";
+import EventBookingsTab from "@/components/admin/EventBookingsTab";
 import QuickContactTab from "@/components/admin/QuickContactTab";
 import ServicesManagerTab from "@/components/admin/ServicesManagerTab";
 import MenuManagerTab from "@/components/admin/MenuManagerTab";
@@ -50,6 +52,7 @@ export default function AdminRootPage() {
     totalMenuItems: 0,
     activeServices: 0,
     totalGalleryImages: 0,
+    totalBookings: 0,
   });
 
   // Toaster alert notifications
@@ -86,11 +89,16 @@ export default function AdminRootPage() {
       setMetrics((m) => ({ ...m, pendingReviews: s.docs.length }));
     }, () => {});
 
+    const unsubBookings = onSnapshot(collection(db, "event_bookings"), (s) => {
+      setMetrics((m) => ({ ...m, totalBookings: s.docs.length }));
+    }, () => {});
+
     return () => {
       unsubServices();
       unsubMenu();
       unsubGallery();
       unsubReviews();
+      unsubBookings();
     };
   }, [user]);
 
@@ -215,6 +223,7 @@ export default function AdminRootPage() {
 
   const navItems = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
+    { id: "bookings", label: "Event Bookings", icon: ClipboardList, badge: metrics.totalBookings },
     { id: "contact", label: "Quick Contact & Links", icon: Settings },
     { id: "services", label: "Services Manager", icon: ConciergeBell, badge: metrics.activeServices },
     { id: "menu", label: "Menu Manager", icon: UtensilsCrossed, badge: metrics.totalMenuItems },
@@ -329,6 +338,7 @@ export default function AdminRootPage() {
       <main className="flex-1 lg:ml-72 min-h-screen p-6 sm:p-10 pt-20 lg:pt-10 max-w-7xl mx-auto w-full">
         <div key={activeTab} className="animate-in fade-in zoom-in-[0.99] duration-300 w-full">
           {activeTab === "overview" && <OverviewTab metrics={metrics} onSwitchTab={(tab) => setActiveTab(tab)} />}
+          {activeTab === "bookings" && <EventBookingsTab showToast={showToast} />}
           {activeTab === "contact" && <QuickContactTab showToast={showToast} />}
           {activeTab === "services" && <ServicesManagerTab showToast={showToast} />}
           {activeTab === "menu" && <MenuManagerTab showToast={showToast} />}

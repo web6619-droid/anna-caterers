@@ -1,10 +1,37 @@
 export type AdminTabType =
   | "overview"
+  | "bookings"
   | "contact"
   | "services"
   | "menu"
   | "testimonials"
   | "gallery";
+
+export interface EventBooking {
+  id: string;
+  userDetails?: {
+    name?: string;
+    phone?: string;
+    notes?: string;
+  };
+  eventDetails?: {
+    eventType?: string;
+    guestCount?: number;
+    eventDate?: string | any;
+    mealType?: string;
+  };
+  selectedMenu?: Array<{
+    id: string | number;
+    name: string;
+    price: number;
+    category: string;
+    rawPrice?: string;
+  }>;
+  perGuestTotal?: number;
+  cartTotal?: number;
+  status?: string;
+  createdAt?: any;
+}
 
 export interface GlobalSettings {
   phoneNumber: string;

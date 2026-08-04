@@ -9,9 +9,10 @@ import {
   Sparkles, 
   ArrowRight, 
   PlusCircle, 
-  CheckCircle, 
+  CheckCircle,
   Image as ImageIcon,
-  PhoneCall
+  PhoneCall,
+  ClipboardList
 } from "lucide-react";
 
 interface OverviewTabProps {
@@ -20,6 +21,7 @@ interface OverviewTabProps {
     totalMenuItems: number;
     activeServices: number;
     totalGalleryImages: number;
+    totalBookings?: number;
   };
   onSwitchTab: (tab: AdminTabType) => void;
 }
@@ -61,7 +63,28 @@ export default function OverviewTab({ metrics, onSwitchTab }: OverviewTabProps) 
           <BarChart3 className="w-4 h-4" /> Real-Time Platform Analytics
         </h3>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+          {/* Custom Event Bookings Card */}
+          <div 
+            onClick={() => onSwitchTab("bookings")}
+            className="p-6 rounded-2xl bg-[#18181B] border-2 border-[#D4AF37]/60 hover:border-[#D4AF37] transition-all duration-300 group cursor-pointer shadow-xl relative overflow-hidden"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37] flex items-center justify-center text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-black transition-colors duration-300">
+                <ClipboardList className="w-6 h-6" />
+              </div>
+              <span className="text-[10px] uppercase font-black px-2.5 py-1 rounded-full bg-[#D4AF37]/20 text-[#D4AF37]">
+                Leads
+              </span>
+            </div>
+            <h4 className="text-4xl font-black text-white tracking-tight mb-1 group-hover:text-[#D4AF37] transition-colors">
+              {metrics.totalBookings || 0}
+            </h4>
+            <p className="text-xs text-gray-300 font-bold tracking-wide">
+              Custom Catering Orders
+            </p>
+          </div>
+
           {/* Live Reviews Card */}
           <div 
             onClick={() => onSwitchTab("testimonials")}
