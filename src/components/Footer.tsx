@@ -42,31 +42,56 @@ export default function Footer() {
             </p>
 
             <div className="space-y-8">
-              <a href={isLoading || !settings ? "#" : `tel:${settings.phoneNumber.replace(/\s+/g, "")}`} className="group flex items-center gap-6 transition-transform hover:translate-x-1.5 w-fit cursor-pointer">
-                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-black group-hover:border-gold">
+              <div className="flex items-start gap-6 w-fit">
+                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold transition-all duration-300 shrink-0 shadow-lg mt-1">
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="text-xs tracking-widest text-gray-500 uppercase font-semibold mb-1">Call Us</p>
                   {isLoading || !settings ? (
-                    <div className="h-6 w-36 bg-[#18181B] animate-pulse rounded my-1" />
+                    <div className="space-y-1">
+                      <div className="h-6 w-36 bg-[#18181B] animate-pulse rounded" />
+                      <div className="h-5 w-32 bg-[#18181B] animate-pulse rounded" />
+                    </div>
                   ) : (
-                    <p className="text-xl font-medium text-white transition-colors duration-300 group-hover:text-gold animate-in fade-in duration-500">
-                      {settings.phoneNumber}
-                    </p>
+                    <div className="flex flex-col space-y-1 animate-in fade-in duration-500">
+                      <a 
+                        href={`tel:${settings.phoneNumber.replace(/\s+/g, "")}`}
+                        className="text-xl font-medium text-white transition-colors duration-300 hover:text-gold block"
+                      >
+                        {settings.phoneNumber}
+                      </a>
+                      {settings.secondaryPhone && (
+                        <a 
+                          href={`tel:${settings.secondaryPhone.replace(/\s+/g, "")}`}
+                          className="text-lg font-medium text-gray-300 transition-colors duration-300 hover:text-gold block"
+                        >
+                          {settings.secondaryPhone}
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
-              </a>
+              </div>
 
-              <a href={`mailto:${companyInfo.email}`} className="group flex items-center gap-6 transition-transform hover:translate-x-1.5 w-fit cursor-pointer">
-                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-black group-hover:border-gold">
+              <div className="flex items-start gap-6 w-fit">
+                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold transition-all duration-300 shrink-0 shadow-lg mt-1">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="text-xs tracking-widest text-gray-500 uppercase font-semibold mb-1">Email Us</p>
-                  <p className="text-xl font-medium text-white transition-colors duration-300 group-hover:text-gold">{companyInfo.email}</p>
+                  {isLoading || !settings ? (
+                    <div className="h-6 w-44 bg-[#18181B] animate-pulse rounded" />
+                  ) : (
+                    <a 
+                      href={`mailto:${settings.officialEmail || companyInfo.email}`}
+                      className="text-xl font-medium text-white transition-colors duration-300 hover:text-gold block animate-in fade-in duration-500"
+                    >
+                      {settings.officialEmail || companyInfo.email}
+                    </a>
+                  )}
                 </div>
-              </a>
+              </div>
 
               {/* Dynamic Clickable Visit Us - Google Maps */}
               <a 
