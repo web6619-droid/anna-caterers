@@ -50,8 +50,10 @@ export const defaultServices = [
 ];
 
 export const defaultMenu = [
+  // BEVERAGES
   {
-    category: "Beverage" as const,
+    category: "Beverages",
+    subCourse: "",
     title: "Fresh Farm Grape Juice",
     price: "₹120 / glass",
     description: "Handpicked dark concord grapes blended with crushed ice and organic mint.",
@@ -59,7 +61,8 @@ export const defaultMenu = [
     imagePublicId: "",
   },
   {
-    category: "Beverage" as const,
+    category: "Beverages",
+    subCourse: "",
     title: "Alphonso Mango Nectar",
     price: "₹150 / glass",
     description: "Rich Alphonso mango pulp served chilled with roasted pistachio shavings.",
@@ -67,23 +70,19 @@ export const defaultMenu = [
     imagePublicId: "",
   },
   {
-    category: "Beverage" as const,
+    category: "Beverages",
+    subCourse: "",
     title: "Watermelon Mint Refresher",
     price: "₹100 / glass",
     description: "Crisp red watermelon juiced with basil and fresh ginger notes.",
     imageUrl: "https://images.unsplash.com/photo-1589733955941-5eeaf752f6dd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     imagePublicId: "",
   },
+
+  // STARTERS
   {
-    category: "Dessert" as const,
-    title: "Artisanal Vanilla Ice Cream Sundae",
-    price: "₹180 / plate",
-    description: "Madagascar vanilla bean glaze over chocolate brownie squares.",
-    imageUrl: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    imagePublicId: "",
-  },
-  {
-    category: "Starter" as const,
+    category: "Starters",
+    subCourse: "",
     title: "Kerala Spiced Fried Chicken",
     price: "₹320 / portion",
     description: "Tender chicken marinated in crushed black pepper and fennel, crisp fried in coconut oil.",
@@ -91,7 +90,8 @@ export const defaultMenu = [
     imagePublicId: "",
   },
   {
-    category: "Starter" as const,
+    category: "Starters",
+    subCourse: "",
     title: "Golden Mozzarella Cheese Balls",
     price: "₹260 / portion",
     description: "Crisp herb-crusted balls stuffed with molten melted cheese and jalapenos.",
@@ -99,15 +99,19 @@ export const defaultMenu = [
     imagePublicId: "",
   },
   {
-    category: "Starter" as const,
+    category: "Starters",
+    subCourse: "",
     title: "Grand Banquet Grazing Platter",
-    price: "₹750 / platter",
+    price: "₹450 / platter",
     description: "Exotic cheeses, marinated skewers, olives, and charcuterie meats for high-tea and galas.",
     imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     imagePublicId: "",
   },
+
+  // MAIN COURSE - 1ST COURSE
   {
-    category: "Main Course" as const,
+    category: "Main Course",
+    subCourse: "1st Course",
     title: "Malabar Dum Chicken Biryani",
     price: "₹350 / portion",
     description: "Fragrant Jeerakasala rice layered with slow-cooked spiced meat, fried cashew, and sultanas.",
@@ -115,11 +119,72 @@ export const defaultMenu = [
     imagePublicId: "",
   },
   {
-    category: "Kerala Traditional" as const,
+    category: "Main Course",
+    subCourse: "1st Course",
     title: "Authentic Kerala Sadya on Banana Leaf",
     price: "₹450 / leaf",
-    description: "28 traditional vegetarian delicacies including four distinct varieties of rich payasam.",
+    description: "28 traditional vegetarian delicacies served across generous festive rounds of red rice.",
     imageUrl: "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    imagePublicId: "",
+  },
+
+  // MAIN COURSE - 2ND COURSE
+  {
+    category: "Main Course",
+    subCourse: "2nd Course",
+    title: "Slow-Roasted Travancore Mutton Curry",
+    price: "₹480 / portion",
+    description: "Tender prime cuts stewed in freshly roasted coconut, whole black pepper, and stone-ground aromatics.",
+    imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    imagePublicId: "",
+  },
+  {
+    category: "Main Course",
+    subCourse: "2nd Course",
+    title: "Coastal Karimeen Pollichathu",
+    price: "₹520 / portion",
+    description: "Pearl spot fish marinated in spicy onion-tomato gravy, securely wrapped and pan-seared inside a banana leaf.",
+    imageUrl: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    imagePublicId: "",
+  },
+
+  // DESSERTS
+  {
+    category: "Desserts",
+    subCourse: "",
+    title: "Artisanal Vanilla Ice Cream Sundae",
+    price: "₹180 / plate",
+    description: "Madagascar vanilla bean glaze over chocolate brownie squares with caramelized nuts.",
+    imageUrl: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    imagePublicId: "",
+  },
+  {
+    category: "Desserts",
+    subCourse: "",
+    title: "Elaneer (Tender Coconut) Payasam",
+    price: "₹220 / bowl",
+    description: "Silky dessert pudding crafted from coconut cream, tender palm kernels, and cardamoms.",
+    imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    imagePublicId: "",
+  },
+
+  // LIVE COUNTERS
+  {
+    category: "Live Counters",
+    subCourse: "",
+    title: "Live Pasta & Flammé Cheese Wheel Station",
+    price: "₹380 / plate",
+    description: "Chefs preparing freshly tossed pasta inside a hollowed Parmigiano-Reggiano flammé cheese wheel.",
+    imageUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    imagePublicId: "",
+  },
+  {
+    category: "Live Counters",
+    subCourse: "",
+    title: "Live Appam & Mutton Stew Station",
+    price: "₹320 / plate",
+    description: "Hot laced fermented hoppers prepared fresh at the action counter, served with creamy fragrant coconut meat stew.",
+    imageUrl: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     imagePublicId: "",
   },
 ];
