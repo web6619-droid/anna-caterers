@@ -60,9 +60,17 @@ export default function MenuClient() {
     };
   }, []);
 
-  // Phase 4: Firestore Database Sync & WhatsApp Handoff
+  // Phase 4 & Edge-Case Guard: Firestore Database Sync & WhatsApp Handoff
   async function handleFinalizeBooking() {
     if (selectedMenu.length === 0 || isFinalizing) return;
+
+    // Strict Edge-Case Validation: Ensure user details and guest count exist from BookEventModal
+    if (!userDetails?.name || !userDetails?.phone || !eventDetails?.guestCount || eventDetails.guestCount <= 0) {
+      alert("Please enter your event details first before finalizing your menu.");
+      router.push("/services");
+      return;
+    }
+
     setIsFinalizing(true);
 
     try {
