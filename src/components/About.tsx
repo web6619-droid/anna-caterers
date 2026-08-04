@@ -12,7 +12,7 @@ export default function About() {
               A Legacy of <span className="text-gold italic font-serif">Excellence</span>.
             </h2>
             <p className="text-gray-400 text-base md:text-lg mb-8 leading-normal md:leading-relaxed">
-              Based in Thiruvaniyoor, Ernakulam, Anna Caterers has been a pillar of culinary excellence since 1995. For nearly three decades, our skilled and experienced chefs have been proficient in a diverse variety of cuisines, ensuring a high-quality dining experience. We believe that food should not just satisfy the palate, but elevate the entire occasion.
+              Based in Aluva, Ernakulam, Anna Caterers has been a pillar of culinary excellence since 1995. For nearly three decades, our skilled and experienced chefs have been proficient in a diverse variety of cuisines, ensuring a high-quality dining experience. We believe that food should not just satisfy the palate, but elevate the entire occasion.
             </p>
             <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4">
               <Link href="/about" className="w-full sm:w-auto text-center px-6 md:px-8 py-3.5 md:py-4 bg-transparent border border-gold text-gold font-semibold rounded-full hover:bg-gold/10 transition-colors tracking-wide text-sm sm:text-base md:text-lg">
