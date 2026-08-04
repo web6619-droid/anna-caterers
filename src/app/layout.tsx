@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { BookingModalProvider } from "@/context/BookingModalContext";
+import { BookingProvider } from "@/context/BookingContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,7 +31,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <BookingModalProvider>{children}</BookingModalProvider>
+        <BookingProvider>
+          <BookingModalProvider>{children}</BookingModalProvider>
+        </BookingProvider>
       </body>
     </html>
   );
