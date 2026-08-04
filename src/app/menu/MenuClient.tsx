@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp } from "firebase/firestore";
 import { defaultMenu } from "@/data/defaultCatalogue";
 import { useBooking, SelectedMenuItem } from "@/context/BookingContext";
-import { Plus, Trash2, ArrowRight, Check, Sparkles, UtensilsCrossed } from "lucide-react";
+import { useGlobalSettings } from "@/lib/settings";
+import { Plus, Trash2, ArrowRight, Check, Sparkles, UtensilsCrossed, Loader2, MessageSquare } from "lucide-react";
 
 type MenuItem = {
   id: string | number;
@@ -34,8 +35,10 @@ export default function MenuClient() {
   const [activeSubCourse, setActiveSubCourse] = useState("1st Course");
   const [dbItems, setDbItems] = useState<MenuItem[]>([]);
   const [menuLoaded, setMenuLoaded] = useState(false);
+  const [isFinalizing, setIsFinalizing] = useState(false);
 
-  const { selectedMenu, addToMenu, removeFromMenu, isDishSelected, perGuestTotal, cartTotal, eventDetails } = useBooking();
+  const { selectedMenu, addToMenu, removeFromMenu, isDishSelected, perGuestTotal, cartTotal, eventDetails, userDetails, clearCart } = useBooking();
+  const { settings } = useGlobalSettings();
   const router = useRouter();
 
   useEffect(() => {
@@ -56,6 +59,69 @@ export default function MenuClient() {
       unsubscribeMenu();
     };
   }, []);
+
+  // Phase 4: Firestore Database Sync & WhatsApp Handoff
+  async function handleFinalizeBooking() {
+    if (selectedMenu.length === 0 || isFinalizing) return;
+    setIsFinalizing(true);
+
+    try {
+      // 1. Persist entire order into Firestore event_bookings collection
+      await addDoc(collection(db, "event_bookings"), {
+        userDetails,
+        eventDetails,
+        selectedMenu,
+        perGuestTotal,
+        cartTotal,
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
+      console.log("Booking successfully synced to event_bookings collection.");
+    } catch (error) {
+      console.warn("Notice: Offline or Firestore rule restriction prevented DB sync, proceeding to WhatsApp handoff:", error);
+    } finally {
+      setIsFinalizing(false);
+
+      // 2. Format concise, readable WhatsApp summary
+      // NOTE: Replace fallback number with your client's live WhatsApp phone number!
+      const targetPhone = (settings?.whatsappNumber || "919847598053").replace(/\D/g, "");
+
+      const dateFormatted = eventDetails.eventDate instanceof Date
+        ? eventDetails.eventDate.toLocaleDateString()
+        : (eventDetails.eventDate || "To be scheduled");
+
+      const dishesFormatted = selectedMenu
+        .map((item, index) => `  ${index + 1}. *${item.name}* (${item.rawPrice || `₹${item.price}`}) - _[${item.category}]_`)
+        .join("\n");
+
+      let messageText = `*New Luxury Catering Booking Request!*\n\n` +
+        `*Client Contact:*\n` +
+        `• Name: ${userDetails.name || "Guest Client"}\n` +
+        `• Phone: ${userDetails.phone || "Not provided"}\n`;
+
+      if (userDetails.notes) {
+        messageText += `• Special Notes: ${userDetails.notes}\n`;
+      }
+
+      messageText += `\n*Event Parameters:*\n` +
+        `• Occasion Type: ${eventDetails.eventType}\n` +
+        `• Event Date: ${dateFormatted}\n` +
+        `• Meal Service: ${eventDetails.mealType}\n` +
+        `• Expected Guests: ${eventDetails.guestCount || 100} guests\n\n` +
+        `*Investment Summary:*\n` +
+        `• Rate Per Plate: ₹${perGuestTotal.toLocaleString("en-IN")}\n` +
+        `• *Estimated Total: ₹${cartTotal.toLocaleString("en-IN")}*\n\n` +
+        `*Curated Feast Menu (${selectedMenu.length} dishes):*\n${dishesFormatted}`;
+
+      const encodedMessage = encodeURIComponent(messageText);
+      const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodedMessage}`;
+
+      // 3. The Handoff: Open chat link, clear cart state, and return to services page
+      window.open(whatsappUrl, "_blank");
+      clearCart();
+      router.push("/services");
+    }
+  }
 
   // Helper to convert price strings like "₹350 / portion" into pure integers for computation
   const parsePrice = (priceStr?: string | number): number => {
@@ -310,11 +376,26 @@ export default function MenuClient() {
               </div>
 
               <button
-                onClick={() => router.push("/checkout")}
-                className="w-full sm:w-auto bg-[#D4AF37] text-black hover:bg-[#b5952f] px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all duration-300 hover:scale-[1.03] active:scale-95 shadow-xl shadow-[#D4AF37]/30 flex items-center justify-center gap-2.5 cursor-pointer shrink-0"
+                onClick={handleFinalizeBooking}
+                disabled={isFinalizing}
+                className={`w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2.5 shrink-0 ${
+                  isFinalizing
+                    ? "bg-gray-600 text-gray-300 cursor-not-allowed shadow-none"
+                    : "bg-[#D4AF37] text-black hover:bg-[#b5952f] hover:scale-[1.03] active:scale-95 shadow-xl shadow-[#D4AF37]/30 cursor-pointer"
+                }`}
               >
-                <span>Finalize Booking</span>
-                <ArrowRight className="w-5 h-5 stroke-[2.5]" />
+                {isFinalizing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <MessageSquare className="w-5 h-5 fill-current text-black" />
+                    <span>Finalize Booking</span>
+                    <ArrowRight className="w-5 h-5 stroke-[2.5] text-black" />
+                  </>
+                )}
               </button>
             </div>
           </div>
