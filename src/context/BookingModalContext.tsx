@@ -74,10 +74,15 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
     const name = formData.get("name") as string;
     const phone = formData.get("phone") as string;
     const eventType = formData.get("eventType") as string;
+    const guestCount = (formData.get("guestCount") as string)?.trim();
     const description = formData.get("description") as string;
 
     const whatsappNumber = (settings?.whatsappNumber || "919847598053").replace(/\D/g, "");
-    const formattedText = `New Event Booking:\nName: ${name}\nPhone: ${phone}\nEvent Type: ${eventType}\nDescription: ${description}`;
+    let formattedText = `New Event Booking:\nName: ${name}\nPhone: ${phone}\nEvent Type: ${eventType}`;
+    if (guestCount) {
+      formattedText += `\n*Expected Guests:* ${guestCount}`;
+    }
+    formattedText += `\nDescription: ${description}`;
     const encodedText = encodeURIComponent(formattedText);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
 
@@ -188,6 +193,19 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
                 </select>
               </div>
 
+              {/* Guest Count Input (Optional) */}
+              <div>
+                <label className="block text-[0.65rem] sm:text-[0.7rem] font-bold uppercase tracking-[0.15em] text-[#a0a0a0] mb-1">
+                  GUEST COUNT (OPTIONAL)
+                </label>
+                <input
+                  type="text"
+                  name="guestCount"
+                  placeholder="e.g. 50 - 100 people"
+                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm"
+                />
+              </div>
+
               {/* Describe Your Event Textarea */}
               <div>
                 <label className="block text-[0.65rem] sm:text-[0.7rem] font-bold uppercase tracking-[0.15em] text-[#a0a0a0] mb-1">
@@ -197,7 +215,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
                   name="description"
                   rows={3}
                   required
-                  placeholder="Preferred dates, guest count, and dietary specifications..."
+                  placeholder="Preferred dates, timings, menu preferences, and dietary specifications..."
                   className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm resize-none"
                 />
               </div>
