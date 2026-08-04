@@ -312,7 +312,7 @@ export default function GalleryManagerTab({ showToast }: GalleryManagerTabProps)
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-3 md:pt-2">
               <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300 select-none font-semibold">
                 <input
                   type="checkbox"
@@ -338,7 +338,7 @@ export default function GalleryManagerTab({ showToast }: GalleryManagerTabProps)
                   <button
                     type="button"
                     onClick={() => open()}
-                    className="px-6 py-3 rounded-full bg-[#D4AF37] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#b5952f] transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#D4AF37]/25"
+                    className="w-full md:w-auto justify-center px-6 py-3.5 md:py-3 rounded-full bg-[#D4AF37] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#b5952f] transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#D4AF37]/25"
                   >
                     <Plus className="w-4 h-4 stroke-[3]" />
                     <span>Launch CDN Uploader</span>
@@ -493,11 +493,11 @@ export default function GalleryManagerTab({ showToast }: GalleryManagerTabProps)
       {/* Dedicated Tag Manager Modal */}
       {showTagModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-[#18181B] border border-white/15 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 relative">
+          <div className="bg-[#18181B] border border-white/15 rounded-3xl p-4 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-6 relative">
             <button
               type="button"
               onClick={() => setShowTagModal(false)}
-              className="absolute top-6 right-6 p-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
+              className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-gray-400 hover:text-white transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>

@@ -112,29 +112,29 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
             if (e.target === e.currentTarget) closeModal();
           }}
         >
-          <div className="relative bg-[#151515] border border-white/10 rounded-[24px] p-6 sm:p-8 max-w-[480px] w-full max-h-[90vh] overflow-y-auto shadow-[0_25px_65px_rgba(0,0,0,0.95)] text-left my-auto animate-fadeIn">
+          <div className="relative bg-[#151515] border border-white/10 rounded-[24px] p-4 md:p-8 max-w-[480px] w-full max-h-[90vh] overflow-y-auto shadow-[0_25px_65px_rgba(0,0,0,0.95)] text-left my-auto animate-fadeIn">
             
             <button
               onClick={closeModal}
-              className="absolute top-5 right-5 text-white/60 hover:text-[#d4af37] transition-colors p-1 z-10 cursor-pointer"
+              className="absolute top-4 right-4 md:top-5 md:right-5 text-white/60 hover:text-[#d4af37] transition-colors p-1 z-10 cursor-pointer"
               aria-label="Close modal"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 md:w-6 md:h-6" />
             </button>
 
-            <div className="mb-5 pr-6">
-              <span className="text-[#d4af37] tracking-[0.15em] text-[0.7rem] font-bold uppercase block mb-1">
+            <div className="mb-4 md:mb-5 pr-6">
+              <span className="text-[#d4af37] tracking-[0.15em] text-[0.65rem] md:text-[0.7rem] font-bold uppercase block mb-1">
                 Direct WhatsApp Booking
               </span>
-              <h3 className="text-white font-bold text-2xl sm:text-3xl tracking-tight">
+              <h3 className="text-white font-bold text-xl sm:text-2xl md:text-3xl tracking-tight">
                 Book Your Event
               </h3>
-              <p className="text-[#a0a0a0] text-xs sm:text-sm mt-1">
+              <p className="text-[#a0a0a0] text-xs md:text-sm mt-0.5 md:mt-1">
                 Fill out your details to chat instantly with our culinary team.
               </p>
             </div>
 
-            <form onSubmit={handleBookSubmit} className="space-y-4">
+            <form onSubmit={handleBookSubmit} className="space-y-2.5 md:space-y-4">
               
               {/* Name Input */}
               <div>
@@ -146,7 +146,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
                   name="name"
                   required
                   placeholder="e.g. John Doe"
-                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm"
+                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-2 md:py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm"
                 />
               </div>
 
@@ -160,7 +160,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
                   name="phone"
                   required
                   placeholder="+91 98475 98053"
-                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm"
+                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-2 md:py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm"
                 />
               </div>
 
@@ -174,7 +174,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
                   required
                   value={selectedEvent}
                   onChange={(e) => setSelectedEvent(e.target.value)}
-                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-3 text-white outline-none transition-all duration-300 text-sm cursor-pointer"
+                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-2 md:py-3 text-white outline-none transition-all duration-300 text-sm cursor-pointer"
                 >
                   <option value="" disabled className="text-gray-500">
                     Select an Event...
@@ -202,7 +202,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
                   type="text"
                   name="guestCount"
                   placeholder="e.g. 50 - 100 people"
-                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm"
+                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-2 md:py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm"
                 />
               </div>
 
@@ -213,17 +213,17 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
                 </label>
                 <textarea
                   name="description"
-                  rows={3}
+                  rows={2}
                   required
                   placeholder="Preferred dates, timings, menu preferences, and dietary specifications..."
-                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm resize-none"
+                  className="w-full bg-[#0a0a0a] border border-white/10 focus:border-[#d4af37] rounded-xl px-4 py-2 md:py-3 text-white placeholder-gray-600 outline-none transition-all duration-300 text-sm resize-none"
                 />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-[#d4af37] text-black font-bold text-sm sm:text-base uppercase tracking-wider py-3.5 rounded-xl hover:bg-[#b5952f] transition-all duration-300 flex items-center justify-center gap-2 mt-2 shadow-lg shadow-[#d4af37]/15 cursor-pointer"
+                className="w-full bg-[#d4af37] text-black font-bold text-sm md:text-base uppercase tracking-wider py-3 md:py-3.5 rounded-xl hover:bg-[#b5952f] transition-all duration-300 flex items-center justify-center gap-2 mt-2 shadow-lg shadow-[#d4af37]/15 cursor-pointer"
               >
                 <span>Book via WhatsApp</span>
                 <MessageSquare className="w-5 h-5 fill-current" />

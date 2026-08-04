@@ -262,7 +262,7 @@ export default function AdminRootPage() {
           </div>
 
           {/* Navigation Items */}
-          <nav className="space-y-1.5 pt-4 lg:pt-0">
+          <nav className="space-y-1.5 pt-16 lg:pt-0">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
