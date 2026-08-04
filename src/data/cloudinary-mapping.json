@@ -1,0 +1,42 @@
+{
+  "signature-weddings": {
+    "public_id": "annacaterers/signature-weddings",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758080/annacaterers/signature-weddings.jpg"
+  },
+  "birthday-celebrations": {
+    "public_id": "annacaterers/birthday-celebrations",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758149/annacaterers/birthday-celebrations.jpg"
+  },
+  "baptisms-christenings": {
+    "public_id": "annacaterers/baptisms-christenings",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758082/annacaterers/baptisms-christenings.jpg"
+  },
+  "corporate-galas": {
+    "public_id": "annacaterers/corporate-galas",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758083/annacaterers/corporate-galas.jpg"
+  },
+  "private-dining": {
+    "public_id": "annacaterers/private-dining",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758084/annacaterers/private-dining.jpg"
+  },
+  "cultural-feasts": {
+    "public_id": "annacaterers/cultural-feasts",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758152/annacaterers/cultural-feasts.jpg"
+  },
+  "gallery-1": {
+    "public_id": "annacaterers/gallery-1",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758085/annacaterers/gallery-1.jpg"
+  },
+  "gallery-2": {
+    "public_id": "annacaterers/gallery-2",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758086/annacaterers/gallery-2.jpg"
+  },
+  "gallery-3": {
+    "public_id": "annacaterers/gallery-3",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758087/annacaterers/gallery-3.jpg"
+  },
+  "gallery-4": {
+    "public_id": "annacaterers/gallery-4",
+    "secure_url": "https://res.cloudinary.com/pzynujc5/image/upload/v1785758088/annacaterers/gallery-4.jpg"
+  }
+}

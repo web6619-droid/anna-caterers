@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "firebase/firestore";
 
 export default function Reviews() {
   const initialTestimonials = [
@@ -54,6 +54,36 @@ export default function Reviews() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
 
+  // Subscribe to live 'reviews' collection from Firestore and merge with defaults
+  useEffect(() => {
+    const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const liveReviews = snapshot.docs.map((d) => {
+          const data = d.data();
+          const rValue = data.rating && typeof data.rating === "number" ? Math.min(5, Math.max(1, data.rating)) : 5;
+          const authorName = data.name || "Anonymous";
+          return {
+            id: d.id,
+            stars: "★".repeat(rValue) + "☆".repeat(5 - rValue),
+            quote: data.content || data.review || "Excellent culinary service and event presentation!",
+            initial: authorName.trim().charAt(0).toUpperCase() || "C",
+            author: authorName.trim(),
+            role: data.eventType || data.role || "Signature Event",
+          };
+        });
+        // Lead with custom live database submissions, followed by default luxury testimonials
+        setReviewsList([...liveReviews, ...initialTestimonials]);
+      } else {
+        setReviewsList(initialTestimonials);
+      }
+    }, (err) => {
+      console.warn("Error streaming live reviews on storefront:", err);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   // Auto-Rotation Interval (Rotates every 2.5 seconds continuously)
   useEffect(() => {
     if (isModalOpen) return;
@@ -91,6 +121,7 @@ export default function Reviews() {
     const reviewText = formData.get("review") as string;
 
     const newReviewCard = {
+      id: "temp-" + Date.now(),
       stars: "★".repeat(rating) + "☆".repeat(5 - rating),
       quote: reviewText,
       initial: name.trim().charAt(0).toUpperCase() || "C",
@@ -99,40 +130,34 @@ export default function Reviews() {
     };
 
     try {
-      // Send POST request to backend API (and Firebase Firestore)
-      await addDoc(collection(db, "client_reviews"), {
-        name,
-        eventType,
-        review: reviewText,
-        rating,
+      // Write directly to Firestore 'reviews' collection so it synchronizes in real-time with Admin Dashboard!
+      await addDoc(collection(db, "reviews"), {
+        name: name.trim(),
+        eventType: eventType || "Signature Event",
+        role: eventType || "Signature Event",
+        content: reviewText.trim(),
+        review: reviewText.trim(),
+        rating: rating,
         createdAt: serverTimestamp(),
-        approved: true,
       });
-      
-      // Also try calling the Next.js local API route for demo parity
-      fetch("/api/reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, eventType, review: reviewText, rating }),
-      }).catch(() => {});
-
-      // CRITICAL STEP: Instantly prepend to local state without page refresh
-      // and reset currentIndex to 0 so the newly added review is prominently displayed first!
-      setReviewsList((prevReviews) => [newReviewCard, ...prevReviews]);
-      setCurrentIndex(0);
 
       setSuccessMsg(true);
       setTimeout(() => {
         setSuccessMsg(false);
         setIsModalOpen(false);
         setRating(5);
+        setCurrentIndex(0); // Immediately highlight newly submitted live review at front of carousel!
       }, 1500);
-    } catch (error) {
-      console.error("Error saving review:", error);
-      // Fallback optimistic UI update even if offline
+    } catch (error: any) {
+      console.error("Error saving review to Firestore:", error);
+      if (error?.code === "permission-denied" || error?.message?.includes("permission") || error?.message?.includes("insufficient")) {
+        alert("⚠️ Could not save your review to the live Firebase Database because Firestore Security Rules are currently blocking unauthenticated guest submissions!\n\nTo fix this instantly, open Firebase Console > Firestore Database > Rules, and allow public creates on the /reviews collection:\n\nmatch /reviews/{review} {\n  allow read, create: if true;\n  allow update, delete: if request.auth != null;\n}");
+      } else {
+        alert("Notice: Added your feedback to the local active session. Ensure network connectivity for permanent database persistence.");
+      }
+      // Fallback optimistic UI update for local demonstration
       setReviewsList((prevReviews) => [newReviewCard, ...prevReviews]);
       setCurrentIndex(0);
-      alert("Thank you for your feedback! Added to the carousel.");
       setIsModalOpen(false);
     } finally {
       setIsSubmitting(false);

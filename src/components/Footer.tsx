@@ -3,9 +3,11 @@
 import { useRef } from "react";
 import { Phone, Mail, MapPin, Send } from "lucide-react";
 import { companyInfo } from "@/data/config";
+import { useGlobalSettings } from "@/lib/settings";
 
 export default function Footer() {
   const formRef = useRef<HTMLFormElement>(null);
+  const { settings, isLoading } = useGlobalSettings();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -15,7 +17,7 @@ export default function Footer() {
     const phone = formData.get("phone") as string;
     const message = formData.get("message") as string;
 
-    const whatsappNumber = companyInfo.whatsappNumber;
+    const whatsappNumber = (settings?.whatsappNumber || "919847598053").replace(/\D/g, "");
     const formattedText = `New Enquiry (From Footer):\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`;
     const encodedText = encodeURIComponent(formattedText);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
@@ -40,13 +42,19 @@ export default function Footer() {
             </p>
 
             <div className="space-y-8">
-              <a href={`tel:${companyInfo.phone}`} className="group flex items-center gap-6 transition-transform hover:translate-x-1.5 w-fit cursor-pointer">
+              <a href={isLoading || !settings ? "#" : `tel:${settings.phoneNumber.replace(/\s+/g, "")}`} className="group flex items-center gap-6 transition-transform hover:translate-x-1.5 w-fit cursor-pointer">
                 <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-black group-hover:border-gold">
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="text-xs tracking-widest text-gray-500 uppercase font-semibold mb-1">Call Us</p>
-                  <p className="text-xl font-medium text-white transition-colors duration-300 group-hover:text-gold">{companyInfo.phone}</p>
+                  {isLoading || !settings ? (
+                    <div className="h-6 w-36 bg-[#18181B] animate-pulse rounded my-1" />
+                  ) : (
+                    <p className="text-xl font-medium text-white transition-colors duration-300 group-hover:text-gold animate-in fade-in duration-500">
+                      {settings.phoneNumber}
+                    </p>
+                  )}
                 </div>
               </a>
 
@@ -62,7 +70,7 @@ export default function Footer() {
 
               {/* Dynamic Clickable Visit Us - Google Maps */}
               <a 
-                href={companyInfo.googleMapsUrl}
+                href={isLoading || !settings ? "#" : settings.googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Open Anna Caterers on Google Maps"
@@ -78,9 +86,13 @@ export default function Footer() {
                       (open map ↗)
                     </span>
                   </p>
-                  <p className="text-xl font-medium text-white transition-colors duration-300 group-hover:text-gold group-hover:underline decoration-gold/50 underline-offset-4">
-                    {companyInfo.address}
-                  </p>
+                  {isLoading || !settings ? (
+                    <div className="h-6 w-52 bg-[#18181B] animate-pulse rounded my-1" />
+                  ) : (
+                    <p className="text-xl font-medium text-white transition-colors duration-300 group-hover:text-gold group-hover:underline decoration-gold/50 underline-offset-4 animate-in fade-in duration-500">
+                      {settings.address}
+                    </p>
+                  )}
                 </div>
               </a>
             </div>

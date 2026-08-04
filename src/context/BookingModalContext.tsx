@@ -6,6 +6,7 @@ import { X, MessageSquare } from "lucide-react";
 import { defaultServicesList } from "@/data/services";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { useGlobalSettings } from "@/lib/settings";
 
 interface BookingModalContextType {
   openModal: (serviceName?: string) => void;
@@ -28,6 +29,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
   const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [dynamicServices, setDynamicServices] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
+  const { settings } = useGlobalSettings();
 
   // Initialize and check Firestore for any newly added admin services dynamically
   useEffect(() => {
@@ -74,7 +76,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
     const eventType = formData.get("eventType") as string;
     const description = formData.get("description") as string;
 
-    const whatsappNumber = "919847598053";
+    const whatsappNumber = (settings?.whatsappNumber || "919847598053").replace(/\D/g, "");
     const formattedText = `New Event Booking:\nName: ${name}\nPhone: ${phone}\nEvent Type: ${eventType}\nDescription: ${description}`;
     const encodedText = encodeURIComponent(formattedText);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;

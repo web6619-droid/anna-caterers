@@ -1,7 +1,7 @@
 "use client";
 
 import { Phone, MessageCircle, MapPin } from "lucide-react";
-import { adminContactSettings } from "@/data/config";
+import { useGlobalSettings } from "@/lib/settings";
 
 // Custom inline SVG for Instagram to guarantee cross-version compatibility without import build errors
 function InstagramIcon({ className }: { className?: string }) {
@@ -24,32 +24,43 @@ function InstagramIcon({ className }: { className?: string }) {
 }
 
 export default function FloatingActions() {
-  // Exactly 4 icons configured with dynamic admin destinations & required URL protocols
+  const { settings, isLoading } = useGlobalSettings();
+
+  if (isLoading || !settings) {
+    return (
+      <div className="fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3.5">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="w-12 h-12 rounded-full bg-[#18181B] border border-white/10 animate-pulse shadow-lg" />
+        ))}
+      </div>
+    );
+  }
+
   const actions = [
     {
       icon: InstagramIcon,
-      href: adminContactSettings.instagramUrl,
+      href: settings.instagramUrl,
       label: "Instagram",
       target: "_blank",
       rel: "noopener noreferrer",
     },
     {
       icon: Phone,
-      href: `tel:${adminContactSettings.phone}`,
+      href: `tel:${settings.phoneNumber.replace(/\s+/g, "")}`,
       label: "Call Us",
-      target: "_self", // Native telephony protocol
+      target: "_self",
       rel: undefined,
     },
     {
       icon: MessageCircle,
-      href: `https://wa.me/${adminContactSettings.whatsappNumber}`,
+      href: `https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`,
       label: "WhatsApp",
       target: "_blank",
       rel: "noopener noreferrer",
     },
     {
       icon: MapPin,
-      href: adminContactSettings.googleMapsUrl,
+      href: settings.googleMapsUrl,
       label: "Google Maps Location",
       target: "_blank",
       rel: "noopener noreferrer",
@@ -57,7 +68,7 @@ export default function FloatingActions() {
   ];
 
   return (
-    <div className="fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3.5">
+    <div className="fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3.5 animate-in fade-in duration-500">
       {actions.map((action, index) => (
         <a
           key={index}

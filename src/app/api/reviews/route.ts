@@ -1,72 +1,61 @@
 import { NextResponse } from "next/server";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "firebase/firestore";
 
-// In-memory array to simulate database persistence during active server runs
-// In production, you would insert into PostgreSQL, MongoDB, or Firebase Firestore here.
-const reviewsDatabase = [
-  {
-    id: 1,
-    stars: "★★★★★",
-    quote: "We brought them in to cater our cricket club's end-of-season banquet. The menu was hearty, premium, and absolutely spot-on for the team. Highly recommended!",
-    initial: "V",
-    author: "Vikram M.",
-    role: "Sports Club Banquet",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    stars: "★★★★★",
-    quote: "I hosted a cozy holiday party for 10 people and wanted fine dining brought directly to my home. The customized spread was immaculate. A true luxury experience.",
-    initial: "A",
-    author: "Anjali K.",
-    role: "Private Holiday Gathering",
-    createdAt: new Date().toISOString(),
-  },
-];
-
-// GET: Fetch all client testimonials
+// GET: Fetch all client testimonials from Firestore
 export async function GET() {
-  return NextResponse.json({ success: true, reviews: reviewsDatabase });
+  try {
+    const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    const reviews = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return NextResponse.json({ success: true, reviews });
+  } catch (error) {
+    console.error("Error fetching reviews from Firestore:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch reviews from database." },
+      { status: 500 }
+    );
+  }
 }
 
-// POST: Handle review submission from the modal and return the formatted card object
+// POST: Handle review submission and write directly to Firestore 'reviews' collection
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, rating, review, eventType } = body;
+    const { name, rating, review, eventType, content } = body;
 
-    if (!name || !review) {
+    const feedbackText = review || content;
+
+    if (!name || !feedbackText) {
       return NextResponse.json(
-        { success: false, error: "Name and Review are required fields." },
+        { success: false, error: "Name and Review feedback are required fields." },
         { status: 400 }
       );
     }
 
     const numRating = Math.min(Math.max(Number(rating) || 5, 1), 5);
-    const starString = "★".repeat(numRating) + "☆".repeat(5 - numRating);
-    const initial = name.trim().charAt(0).toUpperCase() || "C";
 
-    const newReviewRecord = {
-      id: reviewsDatabase.length + 1,
-      stars: starString,
-      quote: review.trim(),
-      initial,
-      author: name.trim(),
+    const docRef = await addDoc(collection(db, "reviews"), {
+      name: name.trim(),
+      eventType: eventType || "Signature Event",
       role: eventType || "Signature Event",
-      createdAt: new Date().toISOString(),
-    };
+      content: feedbackText.trim(),
+      review: feedbackText.trim(),
+      rating: numRating,
+      createdAt: serverTimestamp(),
+    });
 
-    // Prepend to our storage so newest appears first
-    reviewsDatabase.unshift(newReviewRecord);
-
-    // Return 201 Created with the new object so frontend can immediately render it!
     return NextResponse.json(
-      { success: true, newReview: newReviewRecord },
+      { success: true, id: docRef.id, message: "Review saved directly to Firestore database." },
       { status: 201 }
     );
-  } catch (error) {
-    console.error("API Error processing review:", error);
+  } catch (error: any) {
+    console.error("API Error saving review to Firestore:", error);
     return NextResponse.json(
-      { success: false, error: "Internal Server Error" },
+      { success: false, error: error?.message || "Internal Server Error" },
       { status: 500 }
     );
   }

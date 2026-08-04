@@ -3,9 +3,11 @@
 import { useRef } from "react";
 import { Phone, Mail, MapPin, Send } from "lucide-react";
 import { companyInfo } from "@/data/config";
+import { useGlobalSettings } from "@/lib/settings";
 
 export default function ContactClient() {
   const formRef = useRef<HTMLFormElement>(null);
+  const { settings, isLoading } = useGlobalSettings();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -15,7 +17,7 @@ export default function ContactClient() {
     const phone = formData.get("phone") as string;
     const message = formData.get("message") as string;
 
-    const whatsappNumber = companyInfo.whatsappNumber;
+    const whatsappNumber = (settings?.whatsappNumber || "919847598053").replace(/\D/g, "");
     const formattedText = `New Enquiry:\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`;
     const encodedText = encodeURIComponent(formattedText);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
@@ -42,7 +44,7 @@ export default function ContactClient() {
             <div className="space-y-8">
               {/* Call Us */}
               <a 
-                href={`tel:${companyInfo.phone}`}
+                href={isLoading || !settings ? "#" : `tel:${settings.phoneNumber.replace(/\s+/g, "")}`}
                 className="group flex items-center gap-6 cursor-pointer transition-all duration-300 hover:translate-x-1.5 w-fit"
               >
                 <div className="w-14 h-14 rounded-full bg-[#151515] border border-white/10 flex items-center justify-center text-gold shrink-0 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-black group-hover:border-gold">
@@ -52,9 +54,13 @@ export default function ContactClient() {
                   <span className="block text-xs font-bold uppercase tracking-[0.15em] text-[#a0a0a0] mb-1">
                     Call Us
                   </span>
-                  <span className="text-xl font-semibold text-white transition-colors duration-300 group-hover:text-gold">
-                    {companyInfo.phone}
-                  </span>
+                  {isLoading || !settings ? (
+                    <div className="h-6 w-40 bg-[#18181B] animate-pulse rounded my-1" />
+                  ) : (
+                    <span className="text-xl font-semibold text-white transition-colors duration-300 group-hover:text-gold block animate-in fade-in duration-500">
+                      {settings.phoneNumber}
+                    </span>
+                  )}
                 </div>
               </a>
 
@@ -78,7 +84,7 @@ export default function ContactClient() {
 
               {/* Visit Us - Dynamic Clickable Google Maps Redirection */}
               <a
-                href={companyInfo.googleMapsUrl}
+                href={isLoading || !settings ? "#" : settings.googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Click to view Anna Caterers on Google Maps"
@@ -94,9 +100,13 @@ export default function ContactClient() {
                       (open map ↗)
                     </span>
                   </span>
-                  <span className="text-xl font-semibold text-white transition-colors duration-300 group-hover:text-gold group-hover:underline decoration-gold/50 underline-offset-4">
-                    {companyInfo.shortAddress}
-                  </span>
+                  {isLoading || !settings ? (
+                    <div className="h-6 w-56 bg-[#18181B] animate-pulse rounded my-1" />
+                  ) : (
+                    <span className="text-xl font-semibold text-white transition-colors duration-300 group-hover:text-gold group-hover:underline decoration-gold/50 underline-offset-4 block animate-in fade-in duration-500">
+                      {settings.address}
+                    </span>
+                  )}
                 </div>
               </a>
             </div>

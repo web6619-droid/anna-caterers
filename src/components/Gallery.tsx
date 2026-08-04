@@ -2,10 +2,10 @@ import Link from "next/link";
 
 export default function Gallery() {
   const images = [
-    "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1530103862676-de8892b12a15?q=80&w=2070&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1528605105345-5344ea20e269?q=80&w=2070&auto=format&fit=crop",
+    "https://res.cloudinary.com/pzynujc5/image/upload/f_auto,q_auto/annacaterers/gallery-1.jpg",
+    "https://res.cloudinary.com/pzynujc5/image/upload/f_auto,q_auto/annacaterers/gallery-2.jpg",
+    "https://res.cloudinary.com/pzynujc5/image/upload/f_auto,q_auto/annacaterers/gallery-3.jpg",
+    "https://res.cloudinary.com/pzynujc5/image/upload/f_auto,q_auto/annacaterers/gallery-4.jpg",
   ];
 
   return (

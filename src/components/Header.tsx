@@ -17,7 +17,7 @@ export default function Header() {
           <Link href="/" className="flex items-center group brand-container h-full">
             <div className="relative h-[90px] w-[150px] transition-transform group-hover:scale-105 mix-blend-lighten brand-logo">
               <Image 
-                src="/Screenshot 2026-07-31 223231.png" 
+                src="/Screenshot 2026-08-03 175502.png" 
                 alt="Anna Caterers Logo"
                 fill
                 className="object-contain"

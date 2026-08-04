@@ -1,112 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { db } from "@/lib/firebase";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { defaultGallery } from "@/data/defaultCatalogue";
 
 type MediaItem = {
-  id: number;
+  id: string | number;
   title: string;
+  caption?: string;
   tag: string;
-  category: string; // Used for filtering by "Weddings" or "Corporate"
-  isVideo: boolean; // Used for filtering by "Videos" vs "Photos"
+  eventTag?: string;
+  category?: string;
+  isVideo: boolean;
+  type?: string;
   imageUrl: string;
+  secure_url?: string;
 };
+
+const DEFAULT_CATEGORIES = ["Weddings", "Corporate", "Celebrations", "Private Dining"];
 
 export default function GalleryClient() {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [dbItems, setDbItems] = useState<MediaItem[]>([]);
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
 
-  const filterCategories = ["All", "Photos", "Videos", "Weddings", "Corporate"];
+  // Robust loading state to prevent FOUC and layout shift
+  const [isLoading, setIsLoading] = useState(true);
+  const [galleryLoaded, setGalleryLoaded] = useState(false);
+  const [catLoaded, setCatLoaded] = useState(false);
 
-  const mediaItems: MediaItem[] = [
-    {
-      id: 1,
-      title: "Grand Banquet - Ernakulam",
-      tag: "Weddings",
-      category: "Weddings",
-      isVideo: true,
-      imageUrl: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 2,
-      title: "Tech Summit Gala - Kochi",
-      tag: "Corporate",
-      category: "Corporate",
-      isVideo: false,
-      imageUrl: "https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 3,
-      title: "Royal Baptism Reception",
-      tag: "Celebrations",
-      category: "Celebrations",
-      isVideo: true,
-      imageUrl: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 4,
-      title: "Sunset Villa Anniversary",
-      tag: "Private Dining",
-      category: "Private Dining",
-      isVideo: false,
-      imageUrl: "https://images.unsplash.com/photo-1544148103-0773bf10d330?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 5,
-      title: "Backwaters Destination Wedding",
-      tag: "Weddings",
-      category: "Weddings",
-      isVideo: true,
-      imageUrl: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 6,
-      title: "Milestone Birthday Soirée",
-      tag: "Celebrations",
-      category: "Celebrations",
-      isVideo: false,
-      imageUrl: "https://images.unsplash.com/photo-1530103862676-de88b635fd4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 7,
-      title: "Traditional Kerala Sadya - Trivandrum",
-      tag: "Cultural Feasts",
-      category: "Cultural Feasts",
-      isVideo: true,
-      imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 8,
-      title: "Cathedral Reception Setup",
-      tag: "Weddings",
-      category: "Weddings",
-      isVideo: false,
-      imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 9,
-      title: "Executive Annual Awards Dinner",
-      tag: "Corporate",
-      category: "Corporate",
-      isVideo: true,
-      imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 10,
-      title: "Luxury Penthouse Tasting Menu",
-      tag: "Private Dining",
-      category: "Private Dining",
-      isVideo: false,
-      imageUrl: "https://images.unsplash.com/photo-1478146896981-b80fe463b330?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    },
-  ];
+  useEffect(() => {
+    if (galleryLoaded && catLoaded) {
+      setIsLoading(false);
+    }
+  }, [galleryLoaded, catLoaded]);
+
+  useEffect(() => {
+    const q = query(collection(db, "gallery"), orderBy("createdAt", "desc"));
+    const unsubscribeGallery = onSnapshot(q, (snapshot) => {
+      const docs = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      })) as MediaItem[];
+      setDbItems(docs);
+      setGalleryLoaded(true);
+    }, (err) => {
+      console.warn("Error subscribing to gallery in storefront, utilizing default catalogue:", err);
+      setGalleryLoaded(true);
+    });
+
+    const qCat = query(collection(db, "gallery_categories"), orderBy("name", "asc"));
+    const unsubscribeCat = onSnapshot(qCat, (snapshot) => {
+      if (snapshot.docs.length > 0) {
+        const cats = snapshot.docs.map((d) => d.data().name || d.id);
+        setCategories(Array.from(new Set(cats)));
+      } else {
+        setCategories(DEFAULT_CATEGORIES);
+      }
+      setCatLoaded(true);
+    }, (err) => {
+      console.warn("Error fetching gallery_categories, using defaults:", err);
+      setCategories(DEFAULT_CATEGORIES);
+      setCatLoaded(true);
+    });
+
+    return () => {
+      unsubscribeGallery();
+      unsubscribeCat();
+    };
+  }, []);
+
+  const filterCategories = ["All", "Photos", "Videos", ...categories];
+
+  const mediaItems: MediaItem[] = dbItems.length > 0
+    ? dbItems
+    : defaultGallery.map((item, index) => ({ id: index + 1, ...item }));
 
   const filteredItems = mediaItems.filter((item) => {
+    const isVid = item.isVideo || item.type === "video" || (item.imageUrl || item.secure_url || "").match(/\.(mp4|mov|webm)($|\?)/i);
+    const tag = item.eventTag || item.tag || item.category;
+
     if (activeFilter === "All") return true;
-    if (activeFilter === "Photos") return !item.isVideo;
-    if (activeFilter === "Videos") return item.isVideo;
-    if (activeFilter === "Weddings") return item.category === "Weddings";
-    if (activeFilter === "Corporate") return item.category === "Corporate";
-    return true;
+    if (activeFilter === "Photos") return !isVid;
+    if (activeFilter === "Videos") return Boolean(isVid);
+    return tag === activeFilter;
   });
 
   return (
@@ -126,61 +105,117 @@ export default function GalleryClient() {
           </p>
         </div>
 
-        {/* Filter Navigation */}
-        <div className="flex justify-center flex-wrap gap-3 mb-14">
-          {filterCategories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveFilter(category)}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold tracking-wide border transition-all duration-300 ${
-                activeFilter === category
-                  ? "bg-gold/10 border-gold text-gold"
-                  : "bg-[#151515] border-white/5 text-white hover:border-gold/50 hover:text-gold"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        {/* Media Grid */}
-        <div 
-          className="grid gap-6"
-          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}
-        >
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="relative rounded-2xl overflow-hidden aspect-[3/4] bg-[#151515] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
-            >
-              {/* Image Background */}
-              <Image
-                src={item.imageUrl}
-                alt={item.title}
-                fill
-                className="object-cover transition-transform duration-700 cubic-bezier(0.25, 0.46, 0.45, 0.94) group-hover:scale-105"
-              />
-
-              {/* Video Badge */}
-              {item.isVideo && (
-                <div className="absolute top-4 right-4 bg-black/80 text-white text-xs font-bold tracking-widest px-3.5 py-1.5 rounded-full border border-white/15 backdrop-blur-md flex items-center gap-1.5 z-10 group-hover:bg-gold group-hover:text-black group-hover:border-gold transition-colors duration-300">
-                  <span>▷</span> VIDEO
-                </div>
-              )}
-
-              {/* Hover Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/95 via-[#0f0f0f]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-8 z-0">
-                <span className="text-gold text-xs font-semibold tracking-[0.15em] uppercase mb-1.5 translate-y-3 group-hover:translate-y-0 transition-transform duration-400">
-                  {item.tag}
-                </span>
-                <h3 className="text-white text-xl font-bold translate-y-3 group-hover:translate-y-0 transition-transform duration-400 delay-50">
-                  {item.title}
-                </h3>
-              </div>
+        {/* Conditional Rendering: Skeleton Loader vs Actual Data */}
+        {isLoading ? (
+          <div className="space-y-14">
+            {/* Skeleton Filter Chips */}
+            <div className="flex justify-center flex-wrap gap-3">
+              {[...Array(6)].map((_, idx) => (
+                <div 
+                  key={idx} 
+                  className="w-24 h-10 rounded-full animate-pulse bg-[#18181B] border border-white/5"
+                />
+              ))}
             </div>
-          ))}
-        </div>
 
+            {/* Skeleton Media Grid */}
+            <div 
+              className="grid gap-6"
+              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}
+            >
+              {[...Array(6)].map((_, idx) => (
+                <div
+                  key={idx}
+                  className="rounded-2xl aspect-[3/4] animate-pulse bg-[#18181B] border border-white/5 shadow-lg"
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="animate-in fade-in duration-500">
+            {/* Responsive Filter Navigation (Horizontal scrolling on mobile, flex-wrap on desktop) */}
+            <div className="flex overflow-x-auto md:flex-wrap justify-start md:justify-center gap-3 mb-14 pb-2 md:pb-0 scrollbar-none">
+              {filterCategories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveFilter(category)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-semibold tracking-wide border transition-all duration-300 shrink-0 ${
+                    activeFilter === category
+                      ? "bg-gold/10 border-gold text-gold shadow-[0_4px_20px_rgba(212,175,55,0.2)]"
+                      : "bg-[#151515] border-white/5 text-white hover:border-gold/50 hover:text-gold"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            {/* Graceful Empty State vs Media Grid */}
+            {filteredItems.length === 0 ? (
+              <div className="text-center py-20 bg-[#151515] rounded-3xl border border-white/10 max-w-2xl mx-auto p-8 shadow-2xl">
+                <p className="text-2xl font-bold text-white mb-2">No showcase assets found.</p>
+                <p className="text-sm text-gray-400">
+                  We are currently updating our portfolio for <span className="text-gold font-semibold">&ldquo;{activeFilter}&rdquo;</span>. Please select another tag to explore more event memories!
+                </p>
+              </div>
+            ) : (
+              <div 
+                className="grid gap-6"
+                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}
+              >
+                {filteredItems.map((item) => {
+                  const assetUrl = item.imageUrl || item.secure_url || "";
+                  const isVid = item.isVideo || item.type === "video" || assetUrl.match(/\.(mp4|mov|webm)($|\?)/i);
+                  const itemTitle = item.title || item.caption || "Event Moment";
+                  const itemTag = item.eventTag || item.tag || item.category || "Moment";
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="relative rounded-2xl overflow-hidden aspect-[3/4] bg-[#151515] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex flex-col justify-end"
+                    >
+                {/* Media Rendering: Image or Interactive Video Reel */}
+                {isVid ? (
+                  <video
+                    src={assetUrl}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 cubic-bezier(0.25, 0.46, 0.45, 0.94) group-hover:scale-105"
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                  />
+                ) : (
+                  <Image
+                    src={assetUrl}
+                    alt={itemTitle}
+                    fill
+                    className="object-cover transition-transform duration-700 cubic-bezier(0.25, 0.46, 0.45, 0.94) group-hover:scale-105"
+                  />
+                )}
+
+                {/* Video Badge */}
+                {isVid && (
+                  <div className="absolute top-4 right-4 bg-black/85 text-gold text-xs font-extrabold tracking-widest px-3.5 py-1.5 rounded-full border border-gold/40 backdrop-blur-md flex items-center gap-1.5 z-10 group-hover:bg-gold group-hover:text-black transition-colors duration-300 shadow">
+                    <span className="animate-pulse">▷</span> VIDEO
+                  </div>
+                )}
+
+                {/* Hover Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/95 via-[#0f0f0f]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-8 z-10">
+                  <span className="text-gold text-xs font-semibold tracking-[0.15em] uppercase mb-1.5 translate-y-3 group-hover:translate-y-0 transition-transform duration-400">
+                    {itemTag}
+                  </span>
+                  <h3 className="text-white text-xl font-bold translate-y-3 group-hover:translate-y-0 transition-transform duration-400 delay-50">
+                    {itemTitle}
+                  </h3>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      </div>
+    )}
       </div>
     </section>
   );
