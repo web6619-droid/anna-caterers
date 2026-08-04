@@ -28,9 +28,9 @@ export default function FloatingActions() {
 
   if (isLoading || !settings) {
     return (
-      <div className="fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3.5">
+      <div className="fixed bottom-0 left-0 right-0 w-full flex flex-row justify-around bg-[#0a0a0a]/95 border-t border-white/10 py-2.5 px-4 z-[9999] md:bottom-auto md:left-auto md:right-4 lg:right-6 md:top-1/2 md:-translate-y-1/2 md:w-auto md:flex-col md:gap-3.5 md:bg-transparent md:border-t-0 md:p-0 md:z-50">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="w-12 h-12 rounded-full bg-[#18181B] border border-white/10 animate-pulse shadow-lg" />
+          <div key={i} className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#18181B] border border-white/10 animate-pulse shadow-lg shrink-0" />
         ))}
       </div>
     );
@@ -68,7 +68,7 @@ export default function FloatingActions() {
   ];
 
   return (
-    <div className="fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3.5 animate-in fade-in duration-500">
+    <div className="fixed bottom-0 left-0 right-0 w-full flex flex-row justify-around items-center bg-[#0a0a0a]/95 backdrop-blur-md border-t border-white/15 py-2.5 px-4 z-[9999] shadow-[0_-10px_25px_rgba(0,0,0,0.8)] animate-in fade-in duration-500 md:bottom-auto md:left-auto md:right-4 lg:right-6 md:top-1/2 md:-translate-y-1/2 md:w-auto md:flex-col md:gap-3.5 md:bg-transparent md:border-t-0 md:p-0 md:shadow-none md:z-50">
       {actions.map((action, index) => (
         <a
           key={index}
@@ -77,7 +77,7 @@ export default function FloatingActions() {
           rel={action.rel}
           title={`Connect via ${action.label}`}
           aria-label={action.label}
-          className="w-12 h-12 flex items-center justify-center rounded-full bg-[#151515]/90 backdrop-blur-md border border-white/20 text-white shadow-lg hover:text-[#d4af37] hover:border-[#d4af37] hover:bg-[#1c1c1c] transition-all duration-300 hover:scale-110 hover:shadow-[0_4px_18px_rgba(212,175,55,0.35)] cursor-pointer group"
+          className="w-11 h-11 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-[#151515]/90 md:bg-[#151515]/90 backdrop-blur-md border border-white/20 text-white shadow-lg hover:text-[#d4af37] hover:border-[#d4af37] hover:bg-[#1c1c1c] transition-all duration-300 hover:scale-110 hover:shadow-[0_4px_18px_rgba(212,175,55,0.35)] cursor-pointer group shrink-0"
         >
           <action.icon className="w-5 h-5 transition-transform duration-300 group-hover:scale-105" />
         </a>

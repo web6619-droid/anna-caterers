@@ -27,8 +27,8 @@ export default function Footer() {
   }
 
   return (
-    <footer id="contact" className="py-24 bg-[#111111] text-white border-t border-white/5 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <footer id="contact" className="pt-24 pb-36 md:pb-24 bg-[#111111] text-white border-t border-white/5 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           
           {/* Left Side Info */}

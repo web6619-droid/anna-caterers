@@ -18,26 +18,26 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 md:px-10 lg:px-8 w-full pt-28 sm:pt-24 pb-16 md:py-0">
         <div className="max-w-2xl">
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] tracking-tight mb-6 animate-hero-spring">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white leading-[1.15] sm:leading-[1.1] tracking-tight mb-6 animate-hero-spring">
             We Serve You<br />
             The Real <span className="text-gold italic font-serif">Happiness</span>.
           </h1>
-          <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-lg leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 md:mb-10 max-w-lg leading-normal md:leading-relaxed">
             Elevating every occasion. Anna Caterers brings over 30 years of culinary excellence to your signature events.
           </p>
-          <div className="flex gap-6 items-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
             <Link 
               href="/services"
-              className="px-8 py-4 bg-gold text-black font-semibold rounded-full hover:bg-gold-hover transition-colors tracking-wide text-lg inline-block"
+              className="w-full sm:w-auto text-center px-6 md:px-8 py-3.5 md:py-4 bg-gold text-black font-semibold rounded-full hover:bg-gold-hover transition-colors tracking-wide text-sm sm:text-base md:text-lg inline-block shadow-lg shadow-gold/15"
             >
               VIEW OUR SERVICES
             </Link>
-            <div className="flex items-center gap-2 text-white bg-white/5 px-6 py-3 rounded-full backdrop-blur-sm border border-white/10">
-              <span className="text-gold text-xl">★</span>
-              <span className="font-bold">4.8</span>
-              <span className="text-gray-400 text-sm">/ 5 Rating</span>
+            <div className="flex items-center justify-center gap-2 text-white bg-white/5 px-5 py-3 md:px-6 md:py-3 rounded-full backdrop-blur-sm border border-white/10 w-full sm:w-auto">
+              <span className="text-gold text-lg md:text-xl">★</span>
+              <span className="font-bold text-sm md:text-base">4.8</span>
+              <span className="text-gray-400 text-xs md:text-sm">/ 5 Rating</span>
             </div>
           </div>
         </div>
