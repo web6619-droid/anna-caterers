@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, deleteDoc, doc, query, orderBy } from "firebase/firestore";
 import { Review } from "@/types/admin";
-import { Trash2, Star, MessageSquare, Loader2, ShieldAlert, Copy, Check, CheckCircle2 } from "lucide-react";
+import { Trash2, Star, MessageSquare, Loader2, ShieldAlert, CheckCircle2 } from "lucide-react";
 
 interface TestimonialModeratorTabProps {
   showToast: (type: "success" | "error" | "info", message: string) => void;
@@ -57,15 +57,6 @@ export default function TestimonialModeratorTab({ showToast }: TestimonialModera
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [permissionBlocked, setPermissionBlocked] = useState(false);
-  const [copiedRules, setCopiedRules] = useState(false);
-
-  const firestoreRulesText = `rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /reviews/{review} {\n      allow read, create: if true;\n      allow update, delete: if request.auth != null;\n    }\n    match /{document=**} {\n      allow read: if true;\n      allow write: if request.auth != null;\n    }\n  }\n}`;
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(firestoreRulesText);
-    setCopiedRules(true);
-    setTimeout(() => setCopiedRules(false), 3000);
-  };
 
   useEffect(() => {
     const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
@@ -135,32 +126,11 @@ export default function TestimonialModeratorTab({ showToast }: TestimonialModera
         </div>
       </div>
 
-      {/* Critical Educational Gold Banner for Public Submission Permission */}
-      <div className="p-6 rounded-2xl bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] space-y-3 shadow-lg">
-        <div className="flex items-center gap-2 font-extrabold text-sm text-white">
-          <span>⚙️ IMPORTANT: Ensure Firestore Rules Allow Public Review Submissions!</span>
-        </div>
-        <p className="text-xs text-gray-300 leading-relaxed">
-          If reviews submitted on the public website do not appear here, it means Firestore Security Rules are currently blocking unauthenticated users from writing to the <code className="text-[#D4AF37] font-mono font-bold">/reviews</code> collection. To fix this immediately, copy the rules below and paste them into <a href="https://console.firebase.google.com/project/anna-caterer-2c82a/firestore/rules" target="_blank" rel="noreferrer" className="text-white underline font-bold">Firebase Console &gt; Firestore Database &gt; Rules</a> and click <strong>Publish</strong>:
-        </p>
-        <div className="relative font-mono text-[11px] bg-[#0D0D0D] p-3 rounded-xl text-green-300 border border-white/10 overflow-x-auto">
-          <button
-            type="button"
-            onClick={copyToClipboard}
-            className="absolute top-2 right-2 px-2.5 py-1 rounded bg-[#D4AF37] text-black font-bold text-[10px] flex items-center gap-1 hover:bg-[#b5952f] shadow"
-          >
-            {copiedRules ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-            <span>{copiedRules ? "Copied!" : "Copy Rules"}</span>
-          </button>
-          <pre>{firestoreRulesText}</pre>
-        </div>
-      </div>
-
       {permissionBlocked && (
         <div className="p-6 rounded-2xl bg-red-500/15 border border-red-500/40 text-red-200 space-y-3">
           <div className="flex items-center gap-2 font-bold text-sm">
             <ShieldAlert className="w-5 h-5 text-red-400 shrink-0" />
-            <span>Firestore Database Security Rules are blocking admin moderation! Please publish the copyable rules above.</span>
+            <span>Firestore Database Security Rules are blocking admin moderation!</span>
           </div>
         </div>
       )}
