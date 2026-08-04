@@ -135,12 +135,12 @@ export default function MenuClient() {
         ) : (
           <div className="animate-in fade-in duration-500">
             {/* Responsive Dynamic Category Filters (Horizontal scroll on mobile, wrap on larger viewports) */}
-            <div className="flex overflow-x-auto md:flex-wrap justify-start md:justify-center gap-3 mb-16 pb-2 md:pb-0 scrollbar-none">
+            <div className="flex overflow-x-auto whitespace-nowrap md:flex-wrap justify-start md:justify-center gap-2 md:gap-3 mb-10 md:mb-16 pb-2 md:pb-0 hide-scrollbar scrollbar-none">
               {filterOptions.map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveFilter(category)}
-                  className={`px-7 py-2.5 rounded-full text-sm font-bold tracking-wider transition-all duration-300 uppercase cursor-pointer shrink-0 ${
+                  className={`px-4.5 py-2 md:px-7 md:py-2.5 rounded-full text-xs md:text-sm font-bold tracking-wider transition-all duration-300 uppercase cursor-pointer shrink-0 ${
                     activeFilter.toLowerCase() === category.toLowerCase()
                       ? "bg-gold text-black shadow-[0_4px_20px_rgba(212,175,55,0.3)] border border-gold"
                       : "bg-[#1a1a1a] text-white border border-white/5 hover:bg-gold hover:text-black hover:border-gold"
@@ -160,14 +160,11 @@ export default function MenuClient() {
                 </p>
               </div>
             ) : (
-              <div 
-                className="grid gap-6"
-                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
-              >
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 md:gap-6">
                 {filteredItems.map((item) => (
                   <div
                     key={item.id}
-                    className="relative rounded-[24px] overflow-hidden aspect-square bg-[#1a1a1a] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.5)] hover:shadow-[0_16px_35px_rgba(0,0,0,0.7)]"
+                    className="relative rounded-xl md:rounded-[24px] overflow-hidden aspect-square bg-[#1a1a1a] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.5)] hover:shadow-[0_16px_35px_rgba(0,0,0,0.7)]"
                   >
                     {/* Card Background Image */}
                     <Image
@@ -178,21 +175,21 @@ export default function MenuClient() {
                     />
 
                     {item.price && (
-                      <div className="absolute top-4 right-4 px-3.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-gold/30 text-gold text-xs font-extrabold z-10">
+                      <div className="absolute top-2 right-2 md:top-4 md:right-4 px-2.5 py-0.5 md:px-3.5 md:py-1 rounded-full bg-black/80 backdrop-blur-md border border-gold/30 text-gold text-[10px] md:text-xs font-extrabold z-10">
                         {item.price}
                       </div>
                     )}
 
                     {/* Dark Linear Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6 pointer-events-none">
-                      <span className="text-gray-300 text-xs font-bold uppercase tracking-[0.15em] mb-1.5">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex flex-col justify-end p-3.5 md:p-6 pointer-events-none">
+                      <span className="text-gray-300 text-[10px] md:text-xs font-bold uppercase tracking-wider md:tracking-[0.15em] mb-0.5 md:mb-1.5 truncate">
                         {item.category}
                       </span>
-                      <h3 className="text-white text-2xl font-bold leading-snug">
+                      <h3 className="text-white text-sm sm:text-lg md:text-2xl font-bold leading-tight md:leading-snug truncate md:whitespace-normal md:line-clamp-2">
                         {item.title}
                       </h3>
                       {item.description && (
-                        <p className="text-xs text-gray-400 line-clamp-2 mt-1 opacity-90">
+                        <p className="text-[11px] md:text-xs text-gray-400 line-clamp-1 md:line-clamp-2 mt-0.5 md:mt-1 opacity-90 hidden sm:block">
                           {item.description}
                         </p>
                       )}

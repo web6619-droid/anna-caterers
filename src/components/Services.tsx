@@ -47,17 +47,14 @@ export default function Services() {
         </div>
 
         {/* Services Grid */}
-        <div 
-          className="grid gap-10" 
-          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}
-        >
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-10">
           {servicesToRender.map((service, index) => (
             <div 
               key={index} 
-              className="bg-[#151515] rounded-2xl border border-white/5 overflow-hidden flex flex-col group transition-all duration-400 hover:-translate-y-1 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+              className="bg-[#151515] rounded-xl md:rounded-2xl border border-white/5 overflow-hidden flex flex-col group transition-all duration-400 hover:-translate-y-1 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
             >
               {/* Image Header */}
-              <div className="h-[220px] relative overflow-hidden">
+              <div className="h-[130px] sm:h-[180px] md:h-[220px] relative overflow-hidden shrink-0">
                 {service.imageUrl && (
                   <Image 
                     src={service.imageUrl} 
@@ -69,19 +66,19 @@ export default function Services() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#151515] to-transparent opacity-80" />
                 
                 {service.price && (
-                  <div className="absolute top-4 right-4 bg-[#1a1a1a]/85 backdrop-blur-sm border border-gold/30 text-gold px-3 py-1.5 rounded-full text-[0.85rem] font-semibold tracking-wide z-10">
+                  <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-[#1a1a1a]/85 backdrop-blur-sm border border-gold/30 text-gold px-2 py-1 md:px-3 md:py-1.5 rounded-full text-[0.65rem] md:text-[0.85rem] font-semibold tracking-wide z-10">
                     {service.price}
                   </div>
                 )}
               </div>
               
               {/* Card Body */}
-              <div className="p-[30px] flex flex-col flex-grow relative z-10">
+              <div className="p-3 md:p-[30px] flex flex-col flex-grow relative z-10">
                 <div className="flex-grow flex flex-col">
-                  <h3 className="text-2xl font-bold mb-3 text-white">
+                  <h3 className="text-sm sm:text-xl md:text-2xl font-bold mb-1.5 md:mb-3 text-white line-clamp-1 md:line-clamp-none">
                     {service.title}
                   </h3>
-                  <p className="text-[#a0a0a0] leading-[1.6] text-[0.95rem] mb-6 flex-grow">
+                  <p className="text-[#a0a0a0] leading-snug md:leading-[1.6] text-[0.75rem] md:text-[0.95rem] mb-3 md:mb-6 flex-grow line-clamp-3 md:line-clamp-none">
                     {service.description}
                   </p>
                 </div>

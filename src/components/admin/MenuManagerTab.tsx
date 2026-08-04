@@ -414,8 +414,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
       )}
 
       {/* A. Form Scroll & Save Button Visibility Fix: Left Column wrapped in max-h and custom-scrollbar */}
-      <div className="lg:col-span-1 bg-[#18181B] border border-white/5 p-8 rounded-3xl shadow-2xl sticky top-28 max-h-[calc(100vh-180px)] overflow-y-auto pr-2 custom-scrollbar">
-        <div className="flex items-center justify-between mb-2">
+      <div className="lg:col-span-1 bg-[#18181B] border border-white/5 w-full max-w-full overflow-hidden p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl lg:sticky lg:top-28 max-h-[85vh] lg:max-h-[calc(100vh-180px)] overflow-y-auto pr-2 custom-scrollbar">
+        <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
           <div className="flex items-center gap-2 text-[#D4AF37] font-semibold text-xs uppercase tracking-widest">
             <Utensils className="w-4 h-4" /> Culinary Catalogue
           </div>
@@ -423,18 +423,18 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
             type="button"
             onClick={() => setShowCatModal(true)}
             title="Configure Categories"
-            className="text-[11px] font-extrabold text-[#D4AF37] hover:underline flex items-center gap-1 cursor-pointer"
+            className="text-[11px] font-extrabold text-[#D4AF37] hover:underline flex items-center gap-1 cursor-pointer shrink-0"
           >
             <Layers className="w-3.5 h-3.5" />
             <span>+ Manage Categories</span>
           </button>
         </div>
 
-        <h3 className="text-2xl font-bold text-white tracking-tight mb-6">Create Menu Dish</h3>
+        <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-4 md:mb-6">Create Menu Dish</h3>
         
-        <form onSubmit={handleAddDish} className="space-y-5">
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+        <form onSubmit={handleAddDish} className="space-y-3.5 md:space-y-5 w-full max-w-full">
+          <div className="w-full">
+            <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
               Dish Title
             </label>
             <input
@@ -443,20 +443,20 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Malabar Fish Curry & Appam"
-              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37] text-sm transition-colors"
+              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3.5 py-2.5 md:px-4 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="flex items-center justify-between gap-1 text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 md:gap-4 w-full">
+            <div className="w-full">
+              <label className="flex items-center justify-between gap-1 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
                 <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5 text-[#D4AF37]" /> Category</span>
               </label>
               {/* Dynamic Category <select> integration */}
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#D4AF37] text-sm transition-colors cursor-pointer"
+                className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3 py-2.5 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors cursor-pointer"
               >
                 {availableCategories.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -464,8 +464,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
               </select>
             </div>
 
-            <div>
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+            <div className="w-full">
+              <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
                 <DollarSign className="w-3.5 h-3.5 text-[#D4AF37]" /> Price / Unit
               </label>
               <input
@@ -474,13 +474,13 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="₹350 / head"
-                className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#D4AF37] text-sm transition-colors"
+                className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3.5 py-2.5 md:px-3 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors"
               />
             </div>
           </div>
 
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+          <div className="w-full">
+            <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
               <FileText className="w-3.5 h-3.5 text-[#D4AF37]" /> Tasting Notes / Ingredients
             </label>
             <textarea
@@ -489,7 +489,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Fresh sear fish simmered in rich coconut milk with heirloom Kerala spices..."
-              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#D4AF37] text-sm transition-colors resize-none"
+              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3.5 py-2.5 md:px-4 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors resize-none"
             />
           </div>
 

@@ -54,9 +54,9 @@ export default function Gallery() {
   // Responsive Grid styling that handles 1, 2, 3, or 4 items gracefully without stretching awkwardly
   const getGridClass = (count: number) => {
     if (count === 1) return "flex justify-center max-w-sm mx-auto w-full";
-    if (count === 2) return "grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto gap-6 w-full";
-    if (count === 3) return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto gap-6 w-full";
-    return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full";
+    if (count === 2) return "grid grid-cols-2 sm:grid-cols-2 max-w-3xl mx-auto gap-3.5 md:gap-6 w-full";
+    if (count === 3) return "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto gap-3.5 md:gap-6 w-full";
+    return "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 md:gap-6 w-full";
   };
 
   return (
@@ -84,7 +84,7 @@ export default function Gallery() {
             return (
               <div
                 key={item.id || index}
-                className="relative h-96 w-full rounded-2xl overflow-hidden bg-[#151515] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex flex-col justify-end"
+                className="relative h-64 sm:h-80 md:h-96 w-full rounded-xl md:rounded-2xl overflow-hidden bg-[#151515] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex flex-col justify-end"
               >
                 {isVid ? (
                   <video
@@ -108,17 +108,17 @@ export default function Gallery() {
 
                 {/* Video Badge */}
                 {isVid && (
-                  <div className="absolute top-4 right-4 bg-black/80 text-gold text-xs font-bold tracking-wider px-3 py-1.5 rounded-full border border-gold/40 backdrop-blur-md flex items-center gap-1.5 z-10 group-hover:bg-gold group-hover:text-black transition-all duration-300">
-                    <span className="animate-pulse">▷</span> VIDEO
+                  <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-black/80 text-gold text-[10px] md:text-xs font-bold tracking-wider px-2 py-1 md:px-3 md:py-1.5 rounded-full border border-gold/40 backdrop-blur-md flex items-center gap-1 md:gap-1.5 z-10 group-hover:bg-gold group-hover:text-black transition-all duration-300">
+                    <span className="animate-pulse">▷</span> <span className="hidden sm:inline">VIDEO</span><span className="sm:hidden">VID</span>
                   </div>
                 )}
 
                 {/* Hover Gradient Overlay with Tag & Title */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/95 via-[#0f0f0f]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-6 z-10">
-                  <span className="text-gold text-xs font-semibold tracking-[0.15em] uppercase mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-400">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/95 via-[#0f0f0f]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-3.5 md:p-6 z-10">
+                  <span className="text-gold text-[10px] md:text-xs font-semibold tracking-wider md:tracking-[0.15em] uppercase mb-0.5 md:mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-400 truncate">
                     {itemTag}
                   </span>
-                  <h3 className="text-white text-lg font-bold translate-y-2 group-hover:translate-y-0 transition-transform duration-400 delay-50 truncate">
+                  <h3 className="text-white text-sm md:text-lg font-bold translate-y-2 group-hover:translate-y-0 transition-transform duration-400 delay-50 truncate">
                     {itemTitle}
                   </h3>
                 </div>

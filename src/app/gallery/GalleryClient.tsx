@@ -128,12 +128,12 @@ export default function GalleryClient() {
         ) : (
           <div className="animate-in fade-in duration-500">
             {/* Responsive Filter Navigation (Horizontal scrolling on mobile, flex-wrap on desktop) */}
-            <div className="flex overflow-x-auto md:flex-wrap justify-start md:justify-center gap-3 mb-14 pb-2 md:pb-0 scrollbar-none">
+            <div className="flex overflow-x-auto whitespace-nowrap md:flex-wrap justify-start md:justify-center gap-2 md:gap-3 mb-10 md:mb-14 pb-2 md:pb-0 hide-scrollbar scrollbar-none">
               {filterCategories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveFilter(category)}
-                  className={`px-6 py-2.5 rounded-full text-sm font-semibold tracking-wide border transition-all duration-300 shrink-0 ${
+                  className={`px-4.5 py-2 md:px-6 md:py-2.5 rounded-full text-xs md:text-sm font-semibold tracking-wide border transition-all duration-300 shrink-0 cursor-pointer ${
                     activeFilter === category
                       ? "bg-gold/10 border-gold text-gold shadow-[0_4px_20px_rgba(212,175,55,0.2)]"
                       : "bg-[#151515] border-white/5 text-white hover:border-gold/50 hover:text-gold"
@@ -153,10 +153,7 @@ export default function GalleryClient() {
                 </p>
               </div>
             ) : (
-              <div 
-                className="grid gap-6"
-                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}
-              >
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 md:gap-6">
                 {filteredItems.map((item) => {
                   const assetUrl = item.imageUrl || item.secure_url || "";
                   const isVid = item.isVideo || item.type === "video" || assetUrl.match(/\.(mp4|mov|webm)($|\?)/i);
@@ -166,7 +163,7 @@ export default function GalleryClient() {
                   return (
                     <div
                       key={item.id}
-                      className="relative rounded-2xl overflow-hidden aspect-[3/4] bg-[#151515] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex flex-col justify-end"
+                      className="relative rounded-xl md:rounded-2xl overflow-hidden aspect-[3/4] bg-[#151515] border border-white/5 group cursor-pointer transition-all duration-400 hover:-translate-y-1.5 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex flex-col justify-end"
                     >
                 {/* Media Rendering: Image or Interactive Video Reel */}
                 {isVid ? (
@@ -189,17 +186,17 @@ export default function GalleryClient() {
 
                 {/* Video Badge */}
                 {isVid && (
-                  <div className="absolute top-4 right-4 bg-black/85 text-gold text-xs font-extrabold tracking-widest px-3.5 py-1.5 rounded-full border border-gold/40 backdrop-blur-md flex items-center gap-1.5 z-10 group-hover:bg-gold group-hover:text-black transition-colors duration-300 shadow">
-                    <span className="animate-pulse">▷</span> VIDEO
+                  <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-black/85 text-gold text-[10px] md:text-xs font-extrabold tracking-wider md:tracking-widest px-2.5 py-1 md:px-3.5 md:py-1.5 rounded-full border border-gold/40 backdrop-blur-md flex items-center gap-1 md:gap-1.5 z-10 group-hover:bg-gold group-hover:text-black transition-colors duration-300 shadow">
+                    <span className="animate-pulse">▷</span> <span className="hidden sm:inline">VIDEO</span><span className="sm:hidden">VID</span>
                   </div>
                 )}
 
                 {/* Hover Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/95 via-[#0f0f0f]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-8 z-10">
-                  <span className="text-gold text-xs font-semibold tracking-[0.15em] uppercase mb-1.5 translate-y-3 group-hover:translate-y-0 transition-transform duration-400">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f]/95 via-[#0f0f0f]/60 to-transparent sm:opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-3.5 md:p-8 z-10">
+                  <span className="text-gold text-[10px] md:text-xs font-semibold tracking-wider md:tracking-[0.15em] uppercase mb-0.5 md:mb-1.5 sm:translate-y-3 group-hover:translate-y-0 transition-transform duration-400 truncate">
                     {itemTag}
                   </span>
-                  <h3 className="text-white text-xl font-bold translate-y-3 group-hover:translate-y-0 transition-transform duration-400 delay-50">
+                  <h3 className="text-white text-xs sm:text-base md:text-xl font-bold sm:translate-y-3 group-hover:translate-y-0 transition-transform duration-400 delay-50 truncate">
                     {itemTitle}
                   </h3>
                 </div>
