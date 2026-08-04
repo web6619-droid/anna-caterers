@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useBookingModal } from "@/context/BookingModalContext";
+import { Menu, X } from "lucide-react";
 
 export default function Header() {
   // Access global booking modal control
   const { openModal } = useBookingModal();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10">
@@ -14,7 +17,11 @@ export default function Header() {
         <div className="flex justify-between items-center h-24">
           
           {/* Logo Area */}
-          <Link href="/" className="flex items-center group brand-container h-full">
+          <Link 
+            href="/" 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="flex items-center group brand-container h-full"
+          >
             <div className="relative h-[90px] w-[150px] transition-transform group-hover:scale-105 mix-blend-lighten brand-logo">
               <Image 
                 src="/Screenshot 2026-08-03 175502.png" 
@@ -27,7 +34,7 @@ export default function Header() {
             <span className="sr-only">Anna Caterers</span>
           </Link>
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {["ABOUT", "SERVICES", "MENU", "GALLERY", "CONTACT"].map((item) => (
               <Link 
@@ -50,8 +57,48 @@ export default function Header() {
             </button>
           </div>
 
+          {/* Mobile Hamburger Menu Toggle Button */}
+          <div className="flex items-center md:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2.5 text-white/80 hover:text-gold focus:outline-none transition-colors rounded-xl border border-white/15 hover:border-gold/50 cursor-pointer bg-[#151515]"
+              aria-label="Toggle navigation menu"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6 text-gold" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown Overlay */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-[#0a0a0a]/95 backdrop-blur-2xl border-b border-white/10 px-6 py-8 animate-in slide-in-from-top-2 fade-in duration-300 shadow-[0_20px_40px_rgba(0,0,0,0.9)]">
+          <nav className="flex flex-col space-y-5 text-center">
+            {["ABOUT", "SERVICES", "MENU", "GALLERY", "CONTACT"].map((item) => (
+              <Link 
+                key={item} 
+                href={`/${item.toLowerCase()}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm tracking-[0.2em] font-bold text-gray-300 hover:text-gold transition-colors py-2 block uppercase"
+              >
+                {item}
+              </Link>
+            ))}
+            <div className="pt-5 border-t border-white/10">
+              <button 
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  openModal();
+                }}
+                className="w-full py-4 bg-gold text-black font-extrabold rounded-xl hover:bg-[#b5952f] transition-colors tracking-wider text-sm uppercase shadow-lg shadow-gold/20 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>BOOK EVENT</span>
+              </button>
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
