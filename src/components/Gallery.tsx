@@ -94,6 +94,7 @@ export default function Gallery() {
                     loop
                     playsInline
                     autoPlay
+                    preload="metadata"
                   />
                 ) : (
                   <Image
@@ -130,7 +131,7 @@ export default function Gallery() {
         <div className="mt-16 text-center">
           <Link
             href="/gallery"
-            className="inline-block px-8 py-4 bg-[#1a1a1a] border border-white/10 text-white font-semibold rounded-full hover:bg-gold hover:text-black hover:border-gold transition-colors tracking-wide shadow-lg"
+            className="inline-block px-8 py-4 bg-[#1a1a1a] border border-white/10 text-white font-bold rounded-full hover:bg-gold hover:text-black hover:border-gold hover:scale-105 active:scale-95 transition-all duration-300 tracking-wide shadow-xl hover:shadow-[0_8px_25px_rgba(212,175,55,0.4)]"
           >
             View Full Portfolio →
           </Link>

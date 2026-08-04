@@ -273,7 +273,7 @@ export default function AdminRootPage() {
                     setActiveTab(item.id as AdminTabType);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full px-4 py-3.5 rounded-2xl font-semibold text-xs tracking-wide transition-all flex items-center justify-between cursor-pointer ${
+                  className={`w-full px-4 py-3.5 rounded-2xl font-semibold text-xs tracking-wide transition-all duration-200 active:scale-[0.97] flex items-center justify-between cursor-pointer ${
                     isActive
                       ? "bg-[#D4AF37] text-black font-extrabold shadow-lg shadow-[#D4AF37]/20"
                       : "text-gray-400 hover:text-[#D4AF37] hover:bg-white/5"
@@ -281,12 +281,12 @@ export default function AdminRootPage() {
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`w-4 h-4 ${isActive ? "text-black stroke-[2.5]" : "text-[#D4AF37]"}`} />
-                    <span>{item.label}</span>
+                    <span className="truncate">{item.label}</span>
                   </div>
 
                   {/* Standard Badge */}
-                  {typeof item.badge === "number" && (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  {typeof item.badge === "number" && item.badge > 0 && (
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                       isActive ? "bg-black/20 text-black" : "bg-white/10 text-gray-300"
                     }`}>
                       {item.badge}
@@ -309,14 +309,14 @@ export default function AdminRootPage() {
             <Link
               href="/"
               target="_blank"
-              className="w-full py-2.5 px-4 rounded-xl bg-white/5 text-gray-300 hover:text-[#D4AF37] text-xs font-bold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 rounded-xl bg-white/5 text-gray-300 hover:text-[#D4AF37] text-xs font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <span>View Public Website ↗</span>
             </Link>
 
             <button
               onClick={handleSignOut}
-              className="w-full py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-600 hover:text-white transition-all text-xs font-extrabold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-600 hover:text-white transition-all active:scale-[0.98] text-xs font-extrabold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
@@ -327,12 +327,14 @@ export default function AdminRootPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 lg:ml-72 min-h-screen p-6 sm:p-10 pt-20 lg:pt-10 max-w-7xl mx-auto w-full">
-        {activeTab === "overview" && <OverviewTab metrics={metrics} onSwitchTab={(tab) => setActiveTab(tab)} />}
-        {activeTab === "contact" && <QuickContactTab showToast={showToast} />}
-        {activeTab === "services" && <ServicesManagerTab showToast={showToast} />}
-        {activeTab === "menu" && <MenuManagerTab showToast={showToast} />}
-        {activeTab === "testimonials" && <TestimonialModeratorTab showToast={showToast} />}
-        {activeTab === "gallery" && <GalleryManagerTab showToast={showToast} />}
+        <div key={activeTab} className="animate-in fade-in zoom-in-[0.99] duration-300 w-full">
+          {activeTab === "overview" && <OverviewTab metrics={metrics} onSwitchTab={(tab) => setActiveTab(tab)} />}
+          {activeTab === "contact" && <QuickContactTab showToast={showToast} />}
+          {activeTab === "services" && <ServicesManagerTab showToast={showToast} />}
+          {activeTab === "menu" && <MenuManagerTab showToast={showToast} />}
+          {activeTab === "testimonials" && <TestimonialModeratorTab showToast={showToast} />}
+          {activeTab === "gallery" && <GalleryManagerTab showToast={showToast} />}
+        </div>
       </main>
     </div>
   );

@@ -30,7 +30,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
             <Link 
               href="/services"
-              className="w-full sm:w-auto text-center px-6 md:px-8 py-3.5 md:py-4 bg-gold text-black font-semibold rounded-full hover:bg-gold-hover transition-colors tracking-wide text-sm sm:text-base md:text-lg inline-block shadow-lg shadow-gold/15"
+              className="w-full sm:w-auto text-center px-6 md:px-8 py-3.5 md:py-4 bg-gold text-black font-extrabold rounded-full hover:bg-gold-hover hover:scale-[1.03] active:scale-95 transition-all duration-300 tracking-wide text-sm sm:text-base md:text-lg inline-block shadow-xl shadow-gold/20 hover:shadow-[0_8px_25px_rgba(212,175,55,0.45)]"
             >
               VIEW OUR SERVICES
             </Link>

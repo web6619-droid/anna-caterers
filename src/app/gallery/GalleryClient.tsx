@@ -174,6 +174,7 @@ export default function GalleryClient() {
                     loop
                     playsInline
                     autoPlay
+                    preload="metadata"
                   />
                 ) : (
                   <Image
