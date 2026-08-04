@@ -1,21 +1,30 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { defaultServicesList } from "@/data/services";
 import BookServiceButton from "./BookServiceButton";
 
-export const dynamic = "force-dynamic";
+export default function Services() {
+  const [dbServices, setDbServices] = useState<any[]>([]);
 
-export default async function Services() {
-  let dbServices: any[] = [];
-  
-  try {
+  useEffect(() => {
     const q = query(collection(db, "services"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    dbServices = querySnapshot.docs.map(doc => doc.data());
-  } catch (error) {
-    console.error("Error fetching services:", error);
-  }
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setDbServices(items);
+      },
+      (error) => {
+        console.warn("Error subscribing to real-time services:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   // Uses our central array so dropdown options and service cards always match
   const servicesToRender = dbServices.length > 0 ? dbServices : defaultServicesList;

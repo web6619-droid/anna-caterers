@@ -7,6 +7,7 @@ import { Service } from "@/types/admin";
 import { defaultServices } from "@/data/defaultCatalogue";
 import { Plus, Trash2, Edit3, Save, X, Sparkles, Loader2, DollarSign, FileText, Type, Smile, ShieldAlert, Copy, Check, Image as ImageIcon } from "lucide-react";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
+import { revalidateServices } from "@/actions/revalidate";
 
 interface ServicesManagerTabProps {
   showToast: (type: "success" | "error" | "info", message: string) => void;
@@ -78,6 +79,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
         imagePublicId: imagePublicId || "",
         createdAt: serverTimestamp(),
       });
+      await revalidateServices();
       showToast("success", `Service "${title}" published successfully to frontend booking system!`);
       setTitle("");
       setDescription("");
@@ -115,6 +117,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
         price: editForm.price.trim(),
         emoji: editForm.emoji ? editForm.emoji.trim() : "",
       });
+      await revalidateServices();
       showToast("success", "Service updated successfully!");
       setEditingId(null);
     } catch (err: any) {
@@ -132,6 +135,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
     if (!confirm(`Permanently remove service "${serviceTitle}" from bookings and catalogue?`)) return;
     try {
       await deleteDoc(doc(db, "services", id));
+      await revalidateServices();
       showToast("info", `Removed service "${serviceTitle}".`);
     } catch (err: any) {
       console.error(err);
