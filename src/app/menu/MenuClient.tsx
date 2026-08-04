@@ -33,16 +33,10 @@ export default function MenuClient() {
   const [dbItems, setDbItems] = useState<MenuItem[]>([]);
   const [fetchedCategories, setFetchedCategories] = useState<CategoryItem[]>([]);
 
-  // Loading States to prevent data-fetching flicker
-  const [isLoading, setIsLoading] = useState(true);
+  // Loading States to prevent data-fetching flicker without triggering cascading useEffect re-renders
   const [menuLoaded, setMenuLoaded] = useState(false);
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
-
-  useEffect(() => {
-    if (menuLoaded && categoriesLoaded) {
-      setIsLoading(false);
-    }
-  }, [menuLoaded, categoriesLoaded]);
+  const isLoading = !(menuLoaded && categoriesLoaded);
 
   useEffect(() => {
     // 1. Subscribe to menu items

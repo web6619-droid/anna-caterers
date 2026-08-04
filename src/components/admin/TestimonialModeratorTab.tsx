@@ -220,7 +220,7 @@ export default function TestimonialModeratorTab({ showToast }: TestimonialModera
                     <div className="min-w-0 pr-4">
                       <h4 className="font-bold text-white text-base truncate">{rev.name || "Anonymous Guest"}</h4>
                       <p className="text-xs text-[#D4AF37] font-medium truncate mt-0.5">
-                        {displayEvent} {rev.createdAt ? `• ${new Date(rev.createdAt?.seconds ? rev.createdAt.seconds * 1000 : Date.now()).toLocaleDateString()}` : ""}
+                        {displayEvent} {rev.createdAt?.seconds ? `• ${new Date(rev.createdAt.seconds * 1000).toLocaleDateString()}` : "• Recent"}
                       </p>
                     </div>
 

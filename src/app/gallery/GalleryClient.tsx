@@ -26,16 +26,10 @@ export default function GalleryClient() {
   const [dbItems, setDbItems] = useState<MediaItem[]>([]);
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
 
-  // Robust loading state to prevent FOUC and layout shift
-  const [isLoading, setIsLoading] = useState(true);
+  // Robust loading state to prevent FOUC and layout shift without triggering cascading useEffect re-renders
   const [galleryLoaded, setGalleryLoaded] = useState(false);
   const [catLoaded, setCatLoaded] = useState(false);
-
-  useEffect(() => {
-    if (galleryLoaded && catLoaded) {
-      setIsLoading(false);
-    }
-  }, [galleryLoaded, catLoaded]);
+  const isLoading = !(galleryLoaded && catLoaded);
 
   useEffect(() => {
     const q = query(collection(db, "gallery"), orderBy("createdAt", "desc"));

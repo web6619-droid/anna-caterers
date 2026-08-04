@@ -33,7 +33,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
 
   // Initialize and check Firestore for any newly added admin services dynamically
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
 
     async function fetchServices() {
       try {
@@ -44,7 +44,7 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
           setDynamicServices(names);
           return;
         }
-      } catch (e) {
+      } catch {
         // Fall back quietly to default list if offline or rules block
       }
       setDynamicServices(defaultServicesList.map((s) => s.title));
