@@ -55,9 +55,9 @@ export default function AdminCloudinaryUpload({
       </p>
 
       <CldUploadWidget
-        signatureEndpoint="/api/sign-cloudinary-params"
+        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "anna_caterers"}
         options={{
-          folder: "annacaterers", // Must match server-side forced override exactly
+          folder: "annacaterers",
           maxFiles: 1,
           clientAllowedFormats: ["webp", "png", "jpg", "jpeg"],
           maxFileSize: 10485760, // 10MB direct-stream limit

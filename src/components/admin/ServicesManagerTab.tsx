@@ -234,7 +234,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
               </div>
             ) : (
               <CldUploadWidget
-                signatureEndpoint="/api/sign-cloudinary-params"
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "anna_caterers"}
                 options={{
                   folder: "annacaterers",
                   maxFiles: 1,

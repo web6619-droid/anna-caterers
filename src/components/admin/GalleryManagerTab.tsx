@@ -325,7 +325,7 @@ export default function GalleryManagerTab({ showToast }: GalleryManagerTabProps)
               </label>
 
               <CldUploadWidget
-                signatureEndpoint="/api/sign-cloudinary-params"
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "anna_caterers"}
                 options={{
                   folder: "annacaterers",
                   resourceType: "auto",

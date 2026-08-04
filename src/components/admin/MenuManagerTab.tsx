@@ -513,7 +513,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
               </div>
             ) : (
               <CldUploadWidget
-                signatureEndpoint="/api/sign-cloudinary-params"
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "anna_caterers"}
                 options={{
                   folder: "annacaterers",
                   maxFiles: 1,
@@ -614,7 +614,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
 
         {items.length === 0 && !loading && (
           <div className="p-4 rounded-2xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-medium">
-            💡 Currently displaying main website default dishes. Add your first custom dish on the left, or click &quot;⚡ Sync Storefront Defaults&quot; on the Overview tab to save all these defaults into your database!
+            💡 Currently displaying main website default sample dishes. Add your first custom dish on the left to start curating your online culinary menu!
           </div>
         )}
 
