@@ -6,7 +6,9 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 export interface GlobalSettingsData {
   phoneNumber: string;
+  secondaryPhone?: string;
   whatsappNumber: string;
+  officialEmail?: string;
   instagramUrl: string;
   googleMapsUrl: string;
   address: string;
@@ -14,7 +16,9 @@ export interface GlobalSettingsData {
 
 export const DEFAULT_GLOBAL_SETTINGS: GlobalSettingsData = {
   phoneNumber: "+91 98475 98053",
+  secondaryPhone: "+91 98475 98053",
   whatsappNumber: "919847598053",
+  officialEmail: "info@annacaterers.com",
   instagramUrl: "https://www.instagram.com/_anna_caters_events?igsh=MTFvcjJsNmRzNmpwaA==",
   googleMapsUrl: "https://www.google.com/maps/search/Anna+Caterers+Thiruvaniyoor+Kochi+Kerala",
   address: "Thiruvaniyoor, Kochi, Kerala",

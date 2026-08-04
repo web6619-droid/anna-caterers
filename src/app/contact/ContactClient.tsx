@@ -43,44 +43,61 @@ export default function ContactClient() {
 
             <div className="space-y-8">
               {/* Call Us */}
-              <a 
-                href={isLoading || !settings ? "#" : `tel:${settings.phoneNumber.replace(/\s+/g, "")}`}
-                className="group flex items-center gap-6 cursor-pointer transition-all duration-300 hover:translate-x-1.5 w-fit"
-              >
-                <div className="w-14 h-14 rounded-full bg-[#151515] border border-white/10 flex items-center justify-center text-gold shrink-0 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-black group-hover:border-gold">
+              <div className="flex items-start gap-6 w-fit">
+                <div className="w-14 h-14 rounded-full bg-[#151515] border border-white/10 flex items-center justify-center text-gold shrink-0 shadow-lg mt-1">
                   <Phone className="w-6 h-6" />
                 </div>
-                <div>
-                  <span className="block text-xs font-bold uppercase tracking-[0.15em] text-[#a0a0a0] mb-1">
+                <div className="space-y-2">
+                  <span className="block text-xs font-bold uppercase tracking-[0.15em] text-[#a0a0a0]">
                     Call Us
                   </span>
                   {isLoading || !settings ? (
-                    <div className="h-6 w-40 bg-[#18181B] animate-pulse rounded my-1" />
+                    <div className="space-y-2">
+                      <div className="h-6 w-40 bg-[#18181B] animate-pulse rounded" />
+                      <div className="h-5 w-36 bg-[#18181B] animate-pulse rounded" />
+                    </div>
                   ) : (
-                    <span className="text-xl font-semibold text-white transition-colors duration-300 group-hover:text-gold block animate-in fade-in duration-500">
-                      {settings.phoneNumber}
-                    </span>
+                    <div className="flex flex-col gap-2 animate-in fade-in duration-500">
+                      <a 
+                        href={`tel:${settings.phoneNumber.replace(/\s+/g, "")}`}
+                        className="text-xl font-semibold text-white transition-colors duration-300 hover:text-gold block"
+                      >
+                        {settings.phoneNumber} <span className="text-xs text-gray-500 font-normal ml-1">(Primary)</span>
+                      </a>
+                      {settings.secondaryPhone && (
+                        <a 
+                          href={`tel:${settings.secondaryPhone.replace(/\s+/g, "")}`}
+                          className="text-lg font-medium text-gray-300 transition-colors duration-300 hover:text-gold block"
+                        >
+                          {settings.secondaryPhone} <span className="text-xs text-gray-500 font-normal ml-1">(Secondary)</span>
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
-              </a>
+              </div>
 
               {/* Email Us */}
-              <a 
-                href={`mailto:${companyInfo.email}`}
-                className="group flex items-center gap-6 cursor-pointer transition-all duration-300 hover:translate-x-1.5 w-fit"
-              >
-                <div className="w-14 h-14 rounded-full bg-[#151515] border border-white/10 flex items-center justify-center text-gold shrink-0 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:bg-gold group-hover:text-black group-hover:border-gold">
+              <div className="flex items-start gap-6 w-fit">
+                <div className="w-14 h-14 rounded-full bg-[#151515] border border-white/10 flex items-center justify-center text-gold shrink-0 shadow-lg mt-1">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
                   <span className="block text-xs font-bold uppercase tracking-[0.15em] text-[#a0a0a0] mb-1">
                     Email Us
                   </span>
-                  <span className="text-xl font-semibold text-white transition-colors duration-300 group-hover:text-gold">
-                    {companyInfo.email}
-                  </span>
+                  {isLoading || !settings ? (
+                    <div className="h-6 w-48 bg-[#18181B] animate-pulse rounded my-1" />
+                  ) : (
+                    <a 
+                      href={`mailto:${settings.officialEmail || companyInfo.email}`}
+                      className="text-xl font-semibold text-white transition-colors duration-300 hover:text-gold block animate-in fade-in duration-500"
+                    >
+                      {settings.officialEmail || companyInfo.email}
+                    </a>
+                  )}
                 </div>
-              </a>
+              </div>
 
               {/* Visit Us - Dynamic Clickable Google Maps Redirection */}
               <a

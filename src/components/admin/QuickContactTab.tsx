@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { GlobalSettings } from "@/types/admin";
-import { Phone, MessageSquare, Share2, MapPin, Save, Loader2, Globe, Sparkles, ShieldAlert, Copy, Check } from "lucide-react";
+import { Phone, MessageSquare, Share2, MapPin, Save, Loader2, Globe, Sparkles, ShieldAlert, Copy, Check, Mail } from "lucide-react";
 
 interface QuickContactTabProps {
   showToast: (type: "success" | "error" | "info", message: string) => void;
@@ -18,7 +18,9 @@ export default function QuickContactTab({ showToast }: QuickContactTabProps) {
   
   const [formState, setFormState] = useState<GlobalSettings>({
     phoneNumber: "+91 98475 98053",
+    secondaryPhone: "+91 98475 98053",
     whatsappNumber: "919847598053",
+    officialEmail: "info@annacaterers.com",
     instagramUrl: "https://www.instagram.com/_anna_caters_events?igsh=MTFvcjJsNmRzNmpwaA==",
     googleMapsUrl: "https://www.google.com/maps/search/Anna+Caterers+Thiruvaniyoor+Kochi+Kerala",
     address: "Thiruvaniyoor, Kochi, Kerala",
@@ -162,6 +164,22 @@ export default function QuickContactTab({ showToast }: QuickContactTabProps) {
             />
           </div>
 
+          {/* Secondary Phone Number */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+              <Phone className="w-4 h-4" /> SECONDARY PHONE NUMBER
+            </label>
+            <p className="text-xs text-gray-400">Alternative direct calling number displayed on the public Contact page.</p>
+            <input
+              type="text"
+              name="secondaryPhone"
+              value={formState.secondaryPhone || ""}
+              onChange={handleChange}
+              placeholder="+91 98475 98053"
+              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-[#D4AF37] transition-colors font-mono text-sm shadow-inner"
+            />
+          </div>
+
           {/* WhatsApp Number */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
@@ -175,6 +193,22 @@ export default function QuickContactTab({ showToast }: QuickContactTabProps) {
               onChange={handleChange}
               required
               placeholder="+91 98475 98053 or 919847598053"
+              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-[#D4AF37] transition-colors font-mono text-sm shadow-inner"
+            />
+          </div>
+
+          {/* Official Email Address */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+              <Mail className="w-4 h-4" /> OFFICIAL EMAIL ADDRESS
+            </label>
+            <p className="text-xs text-gray-400">Primary contact email displayed on the public Contact page in clickable mailto: links.</p>
+            <input
+              type="email"
+              name="officialEmail"
+              value={formState.officialEmail || ""}
+              onChange={handleChange}
+              placeholder="info@annacaterers.com"
               className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-[#D4AF37] transition-colors font-mono text-sm shadow-inner"
             />
           </div>

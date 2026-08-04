@@ -35,7 +35,9 @@ export interface EventBooking {
 
 export interface GlobalSettings {
   phoneNumber: string;
+  secondaryPhone?: string;
   whatsappNumber: string;
+  officialEmail?: string;
   instagramUrl: string;
   googleMapsUrl: string;
   address?: string;
