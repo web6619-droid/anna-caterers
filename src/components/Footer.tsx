@@ -175,7 +175,7 @@ export default function Footer() {
                 type="submit"
                 className="w-full bg-gold text-black font-bold text-lg py-4 rounded-xl hover:bg-[#b5952f] transition-colors flex items-center justify-center gap-3 mt-4 cursor-pointer shadow-lg shadow-gold/10"
               >
-                <span>Send Enquiry via WhatsApp</span>
+                <span>Send Enquiry</span>
                 <Send className="w-5 h-5" />
               </button>
             </form>

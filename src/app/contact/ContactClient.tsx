@@ -199,7 +199,7 @@ export default function ContactClient() {
                 id="submit-btn"
                 className="w-full font-bold py-4 px-6 rounded-xl bg-gold text-black hover:bg-[#b5952f] transition-all duration-300 flex items-center justify-center gap-3 text-base mt-2 cursor-pointer shadow-lg shadow-gold/10"
               >
-                <span>Send Enquiry via WhatsApp</span>
+                <span>Send Enquiry</span>
                 <Send className="w-5 h-5" />
               </button>
 
