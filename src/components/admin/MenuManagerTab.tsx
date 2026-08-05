@@ -49,6 +49,13 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imagePublicId, setImagePublicId] = useState("");
+  const [suitableMeals, setSuitableMeals] = useState<string[]>(["Breakfast", "Lunch", "Dinner"]);
+
+  const toggleSuitableMeal = (meal: string) => {
+    setSuitableMeals((prev) =>
+      prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal]
+    );
+  };
 
   // Edit form state for dishes
   const [editForm, setEditForm] = useState<Partial<MenuItem>>({});
@@ -131,6 +138,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
         description: description.trim(),
         imageUrl: imageUrl || "https://res.cloudinary.com/pzynujc5/image/upload/f_auto,q_auto/annacaterers/signature-weddings.jpg",
         imagePublicId: imagePublicId || "",
+        suitableMeals: suitableMeals || ["Breakfast", "Lunch", "Dinner"],
         createdAt: serverTimestamp(),
       });
       showToast("success", `Dish "${title}" added to the ${category} menu catalogue!`);
@@ -139,6 +147,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
       setPrice("₹250 / plate");
       setImageUrl("");
       setImagePublicId("");
+      setSuitableMeals(["Breakfast", "Lunch", "Dinner"]);
     } catch (err: any) {
       console.error(err);
       if (err?.code === "permission-denied" || err?.message?.includes("permission") || err?.message?.includes("insufficient")) {
@@ -155,7 +164,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   // Dish Editing & Deletion
   const startEdit = (item: MenuItem) => {
     setEditingId(item.id);
-    setEditForm({ ...item });
+    setEditForm({ ...item, suitableMeals: item.suitableMeals || ["Breakfast", "Lunch", "Dinner"] });
   };
 
   const saveEdit = async (id: string) => {
@@ -169,6 +178,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
         category: editForm.category || availableCategories[0] || "Main Course",
         price: editForm.price.trim(),
         description: editForm.description ? editForm.description.trim() : "",
+        suitableMeals: editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"],
       });
       showToast("success", "Dish updated successfully!");
       setEditingId(null);
@@ -495,6 +505,37 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
             />
           </div>
 
+          {/* Suitable For (Meal Types) Checkboxes */}
+          <div className="w-full">
+            <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              <Utensils className="w-3.5 h-3.5 text-[#D4AF37]" /> Suitable For (Meal Types)
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {["Breakfast", "Lunch", "Dinner"].map((meal) => {
+                const isSelected = suitableMeals.includes(meal);
+                return (
+                  <div
+                    key={meal}
+                    onClick={() => toggleSuitableMeal(meal)}
+                    className={`px-3 py-2 rounded-xl border text-xs font-bold flex items-center justify-between cursor-pointer transition-all ${
+                      isSelected
+                        ? "bg-[#D4AF37]/15 border-[#D4AF37] text-[#D4AF37]"
+                        : "bg-[#0D0D0D] border-white/10 text-gray-400 hover:border-white/20"
+                    }`}
+                  >
+                    <span>{meal}</span>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => {}}
+                      className="w-3.5 h-3.5 accent-[#D4AF37] rounded cursor-pointer pointer-events-none"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Cloudinary CDN Image Upload Widget */}
           <div className="pt-2">
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
@@ -677,6 +718,37 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                           onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                           className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl p-2 text-xs text-gray-300 resize-none"
                         />
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">Suitable For (Meal Types)</label>
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {["Breakfast", "Lunch", "Dinner"].map((meal) => {
+                              const isSelected = (editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"]).includes(meal);
+                              return (
+                                <div
+                                  key={meal}
+                                  onClick={() => {
+                                    const prev = editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"];
+                                    const updated = prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal];
+                                    setEditForm({ ...editForm, suitableMeals: updated });
+                                  }}
+                                  className={`px-2 py-1.5 rounded-lg border text-[11px] font-semibold flex items-center justify-between cursor-pointer transition-all ${
+                                    isSelected
+                                      ? "bg-[#D4AF37]/15 border-[#D4AF37] text-[#D4AF37]"
+                                      : "bg-[#0D0D0D] border-white/10 text-gray-400"
+                                  }`}
+                                >
+                                  <span>{meal}</span>
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={() => {}}
+                                    className="w-3 h-3 accent-[#D4AF37] rounded pointer-events-none"
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                         <div className="flex justify-end gap-2 pt-1">
                           <button
                             onClick={() => setEditingId(null)}
@@ -704,9 +776,16 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                               {item.price}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-400 leading-relaxed line-clamp-3">
+                          <p className="text-xs text-gray-400 leading-relaxed line-clamp-3 mb-3">
                             {item.description}
                           </p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {(item.suitableMeals || ["Breakfast", "Lunch", "Dinner"]).map((meal: string) => (
+                              <span key={meal} className="px-2 py-0.5 rounded-md bg-[#0D0D0D] border border-white/10 text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+                                {meal}
+                              </span>
+                            ))}
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-white/5">

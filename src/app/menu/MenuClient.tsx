@@ -19,6 +19,7 @@ type MenuItem = {
   imageUrl: string;
   price?: string;
   description?: string;
+  suitableMeals?: string[];
 };
 
 const LOGICAL_CATEGORIES = [
@@ -171,6 +172,20 @@ export default function MenuClient() {
     return true;
   });
 
+  // Smart Contextual Sorting: Sort items suitable for the user's selected mealType to the top
+  const selectedMealType = eventDetails?.mealType || "";
+  const sortedAndFilteredItems = [...filteredItems].sort((a, b) => {
+    if (!selectedMealType) return 0;
+    const aMeals = a.suitableMeals || ["Breakfast", "Lunch", "Dinner"];
+    const bMeals = b.suitableMeals || ["Breakfast", "Lunch", "Dinner"];
+    const aMatches = aMeals.some((m: string) => m.toLowerCase() === selectedMealType.toLowerCase());
+    const bMatches = bMeals.some((m: string) => m.toLowerCase() === selectedMealType.toLowerCase());
+
+    if (aMatches && !bMatches) return -1;
+    if (!aMatches && bMatches) return 1;
+    return 0;
+  });
+
   return (
     <section className="py-24 bg-[#0f0f0f] text-white pb-44 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -244,7 +259,7 @@ export default function MenuClient() {
             )}
 
             {/* Graceful Empty State vs Interactive Menu Grid */}
-            {filteredItems.length === 0 ? (
+            {sortedAndFilteredItems.length === 0 ? (
               <div className="text-center py-20 bg-[#151515] rounded-3xl border border-white/10 max-w-2xl mx-auto p-8 shadow-2xl mt-8">
                 <UtensilsCrossed className="w-12 h-12 text-[#D4AF37]/40 mx-auto mb-4" />
                 <p className="text-xl sm:text-2xl font-bold text-white mb-2">No items listed under {activeFilter === "Main Course" ? `${activeFilter} (${activeSubCourse})` : activeFilter}.</p>
@@ -254,7 +269,7 @@ export default function MenuClient() {
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mt-8">
-                {filteredItems.map((item, index) => {
+                {sortedAndFilteredItems.map((item, index) => {
                   const selected = isDishSelected(item.id);
                   return (
                     <motion.div

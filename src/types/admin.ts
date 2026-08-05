@@ -65,6 +65,7 @@ export interface MenuItem {
   description: string;
   imageUrl?: string;
   imagePublicId?: string;
+  suitableMeals?: string[];
   createdAt?: any;
 }
 
