@@ -63,7 +63,7 @@ export interface MenuItem {
   category: string;
   subCategory?: string;
   subCourse?: string;
-  price: string;
+  price: string | number;
   description: string;
   imageUrl?: string;
   imagePublicId?: string;

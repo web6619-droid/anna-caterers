@@ -158,12 +158,14 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
     setPermissionBlocked(false);
     try {
       const finalSubCategory = category === "Main Course" ? subCategory : "";
+      const cleanPrice = price.trim();
+      const finalPrice = isNaN(Number(cleanPrice)) ? cleanPrice : Number(cleanPrice);
       await addDoc(collection(db, "menu_items"), {
         title: title.trim(),
         category: category || availableCategories[0] || "Main Course",
         subCategory: finalSubCategory,
         subCourse: finalSubCategory,
-        price: price.trim(),
+        price: finalPrice,
         description: description.trim(),
         imageUrl: imageUrl || "https://res.cloudinary.com/pzynujc5/image/upload/f_auto,q_auto/annacaterers/signature-weddings.jpg",
         imagePublicId: imagePublicId || "",
@@ -205,7 +207,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   };
 
   const saveEdit = async (id: string) => {
-    if (!editForm.title || !editForm.price) return;
+    if (!editForm.title || editForm.price === undefined || editForm.price === null || editForm.price === "") return;
     setSaving(true);
     setPermissionBlocked(false);
     try {
@@ -243,13 +245,17 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
         }
       }
 
+      const cleanTitle = String(editForm.title || "").trim();
+      const cleanPriceStr = String(editForm.price).trim();
+      const finalPrice = isNaN(Number(cleanPriceStr)) ? cleanPriceStr : Number(cleanPriceStr);
+
       await updateDoc(docRef, {
-        title: editForm.title.trim(),
+        title: cleanTitle,
         category: editForm.category || availableCategories[0] || "Main Course",
         subCategory: finalSubCategory,
         subCourse: finalSubCategory,
-        price: editForm.price.trim(),
-        description: editForm.description ? editForm.description.trim() : "",
+        price: finalPrice,
+        description: editForm.description ? String(editForm.description).trim() : "",
         suitableMeals: editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"],
         imageUrl: editForm.imageUrl || "",
         imagePublicId: editForm.imagePublicId || "",
