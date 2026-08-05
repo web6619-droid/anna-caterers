@@ -2,12 +2,32 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { MenuItem, Category } from "@/types/admin";
 import { defaultMenu } from "@/data/defaultCatalogue";
 import { Plus, Trash2, Edit3, X, Utensils, Loader2, DollarSign, FileText, Tag, Filter, ShieldAlert, Copy, Check, Layers } from "lucide-react";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
+
+function extractCloudinaryPublicId(url?: string, existingId?: string): string | null {
+  if (existingId) return existingId;
+  if (!url || !url.includes("res.cloudinary.com")) return null;
+  try {
+    const parts = url.split("/upload/");
+    if (parts.length < 2) return null;
+    const path = parts[1];
+    const segments = path.split("/");
+    const folderIdx = segments.findIndex((seg) => seg.startsWith("anna"));
+    if (folderIdx !== -1) {
+      const pubIdWithExt = segments.slice(folderIdx).join("/");
+      const dotIdx = pubIdWithExt.lastIndexOf(".");
+      return dotIdx !== -1 ? pubIdWithExt.substring(0, dotIdx) : pubIdWithExt;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 interface MenuManagerTabProps {
   showToast: (type: "success" | "error" | "info", message: string) => void;
@@ -176,6 +196,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
     setEditingId(item.id);
     setEditForm({
       ...item,
+      imageUrl: item.imageUrl || "",
+      imagePublicId: item.imagePublicId || "",
       suitableMeals: item.suitableMeals || ["Breakfast", "Lunch", "Dinner"],
       subCategory: item.subCategory || item.subCourse || "1st Course",
       subCourse: item.subCategory || item.subCourse || "1st Course",
@@ -187,8 +209,40 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
     setSaving(true);
     setPermissionBlocked(false);
     try {
+      const currentItem = items.find((i) => i.id === id);
       const docRef = doc(db, "menu_items", id);
       const finalSubCategory = editForm.category === "Main Course" ? (editForm.subCategory || editForm.subCourse || "1st Course") : "";
+      
+      // Cleanup bonus: If image was replaced, remove old asset from Cloudinary edge storage
+      if (currentItem && currentItem.imageUrl && editForm.imageUrl && editForm.imageUrl !== currentItem.imageUrl) {
+        const oldPublicId = extractCloudinaryPublicId(currentItem.imageUrl, currentItem.imagePublicId || (currentItem as any).public_id);
+        if (oldPublicId) {
+          try {
+            const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : "";
+            fetch("/api/delete-image", {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json",
+                "Authorization": idToken ? `Bearer ${idToken}` : ""
+              },
+              body: JSON.stringify({ 
+                public_id: oldPublicId,
+                publicId: oldPublicId,
+                resource_type: "image"
+              }),
+            }).then(async (cldRes) => {
+              if (cldRes.ok) {
+                console.log(`Cleaned up replaced Cloudinary asset: ${oldPublicId}`);
+              } else {
+                console.warn("Could not destroy previous asset on Cloudinary:", await cldRes.json().catch(() => ({})));
+              }
+            }).catch((err) => console.warn("Background deletion call failed:", err));
+          } catch (delErr) {
+            console.warn("Error initiating image cleanup:", delErr);
+          }
+        }
+      }
+
       await updateDoc(docRef, {
         title: editForm.title.trim(),
         category: editForm.category || availableCategories[0] || "Main Course",
@@ -197,6 +251,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
         price: editForm.price.trim(),
         description: editForm.description ? editForm.description.trim() : "",
         suitableMeals: editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"],
+        imageUrl: editForm.imageUrl || "",
+        imagePublicId: editForm.imagePublicId || "",
       });
       showToast("success", "Dish updated successfully!");
       setEditingId(null);
@@ -214,6 +270,21 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   const handleDelete = async (id: string, dishTitle: string) => {
     if (!confirm(`Delete dish "${dishTitle}" from the active menu?`)) return;
     try {
+      const itemToDelete = items.find((i) => i.id === id);
+      if (itemToDelete && itemToDelete.imageUrl) {
+        const oldPublicId = extractCloudinaryPublicId(itemToDelete.imageUrl, itemToDelete.imagePublicId || (itemToDelete as any).public_id);
+        if (oldPublicId) {
+          const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : "";
+          fetch("/api/delete-image", {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json",
+              "Authorization": idToken ? `Bearer ${idToken}` : ""
+            },
+            body: JSON.stringify({ public_id: oldPublicId, publicId: oldPublicId, resource_type: "image" }),
+          }).catch((err) => console.warn("Background asset destruction failed:", err));
+        }
+      }
       await deleteDoc(doc(db, "menu_items", id));
       showToast("info", `Deleted dish "${dishTitle}".`);
     } catch (err: any) {
@@ -790,7 +861,82 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                           onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                           className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl p-2 text-xs text-gray-300 resize-none mt-3"
                         />
-                        <div className="flex justify-end gap-2 pt-1">
+
+                        {/* Inline Image Replacement & Preview */}
+                        <div className="pt-2">
+                          <label className="block text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2">
+                            Dish Photography
+                          </label>
+                          {editForm.imageUrl ? (
+                            <div className="flex items-center gap-3 p-2 bg-[#0D0D0D] border border-white/10 rounded-xl">
+                              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg overflow-hidden border border-[#D4AF37]/40 shrink-0 relative bg-[#1c1c1c]">
+                                <img src={editForm.imageUrl} alt="Active preview" className="w-full h-full object-cover" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white text-xs font-semibold truncate mb-1.5">Active Photograph</p>
+                                <CldUploadWidget
+                                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "anna_caterers"}
+                                  options={{
+                                    folder: "annacaterers",
+                                    maxFiles: 1,
+                                    resourceType: "image",
+                                  }}
+                                  onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                                    if (result.info && typeof result.info === "object" && result.info.secure_url) {
+                                      setEditForm((prev) => ({
+                                        ...prev,
+                                        imageUrl: (result.info as any).secure_url,
+                                        imagePublicId: (result.info as any).public_id || "",
+                                      }));
+                                      showToast("info", "New photo staged! Click Save below to finalize.");
+                                    }
+                                  }}
+                                >
+                                  {({ open }) => (
+                                    <button
+                                      type="button"
+                                      onClick={() => open()}
+                                      className="py-1.5 px-3 bg-[#18181B] border border-[#D4AF37]/60 text-[#D4AF37] rounded-lg hover:bg-[#D4AF37] hover:text-black transition-all font-extrabold text-xs flex items-center gap-1.5 cursor-pointer shadow"
+                                    >
+                                      <span>Replace Photo ⟳</span>
+                                    </button>
+                                  )}
+                                </CldUploadWidget>
+                              </div>
+                            </div>
+                          ) : (
+                            <CldUploadWidget
+                              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "anna_caterers"}
+                              options={{
+                                folder: "annacaterers",
+                                maxFiles: 1,
+                                resourceType: "image",
+                              }}
+                              onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                                if (result.info && typeof result.info === "object" && result.info.secure_url) {
+                                  setEditForm((prev) => ({
+                                    ...prev,
+                                    imageUrl: (result.info as any).secure_url,
+                                    imagePublicId: (result.info as any).public_id || "",
+                                  }));
+                                  showToast("info", "Photo uploaded! Click Save below to finalize.");
+                                }
+                              }}
+                            >
+                              {({ open }) => (
+                                <button
+                                  type="button"
+                                  onClick={() => open()}
+                                  className="w-full py-2.5 px-3 bg-[#0D0D0D] border border-dashed border-[#D4AF37]/60 text-[#D4AF37] rounded-xl hover:bg-[#D4AF37]/10 transition-all font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                                >
+                                  <span>Upload Dish Photography →</span>
+                                </button>
+                              )}
+                            </CldUploadWidget>
+                          )}
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-2">
                           <button
                             onClick={() => setEditingId(null)}
                             className="px-3 py-1.5 rounded-lg bg-white/5 text-gray-400 text-xs font-bold"

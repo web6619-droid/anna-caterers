@@ -38,11 +38,11 @@ export async function POST(req: Request) {
     const targetType = resource_type || resourceType || "image";
 
     // 3. SECURITY MANDATE: Strict Folder Confinement Guardrail
-    // Reject any targetId that does not strictly reside within the "annacaterers/" folder namespace
-    if (!targetId.startsWith("annacaterers/")) {
+    // Reject any targetId that does not strictly reside within our project folder namespaces ("annacaterers" or "anna_caterers")
+    if (!targetId.startsWith("annacaterers") && !targetId.startsWith("anna_caterers")) {
       console.warn(`Unauthorized asset deletion attempt outside project bounds for asset: ${targetId}`);
       return NextResponse.json(
-        { error: "Forbidden: Asset is out of scope. Can only destroy resources within 'annacaterers/' vault." },
+        { error: "Forbidden: Asset is out of scope. Can only destroy resources within project vaults." },
         { status: 403 }
       );
     }
