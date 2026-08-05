@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp } from "firebase/firestore";
 import { defaultMenu } from "@/data/defaultCatalogue";
@@ -253,11 +254,15 @@ export default function MenuClient() {
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mt-8">
-                {filteredItems.map((item) => {
+                {filteredItems.map((item, index) => {
                   const selected = isDishSelected(item.id);
                   return (
-                    <div
-                      key={item.id}
+                    <motion.div
+                      key={`${item.id}-${activeFilter}-${activeSubCourse || ""}`}
+                      initial={{ opacity: 0, y: 15 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-20px" }}
+                      transition={{ duration: 0.25, delay: index * 0.05, ease: "easeOut" }}
                       className={`relative rounded-2xl sm:rounded-[24px] overflow-hidden flex flex-col transition-all duration-300 group ${
                         selected
                           ? "bg-[#1c1a13] border-2 border-[#D4AF37] shadow-[0_12px_35px_rgba(212,175,55,0.25)] -translate-y-1"
@@ -345,7 +350,7 @@ export default function MenuClient() {
                           )}
                         </button>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>

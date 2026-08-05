@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { defaultServicesList } from "@/data/services";
@@ -49,8 +50,12 @@ export default function Services() {
         {/* Services Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-10">
           {servicesToRender.map((service, index) => (
-            <div 
-              key={index} 
+            <motion.div 
+              key={service.id || index}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.25), ease: "easeOut" }}
               className="bg-[#151515] rounded-xl md:rounded-2xl border border-white/5 overflow-hidden flex flex-col group transition-all duration-400 hover:-translate-y-1 hover:border-[rgba(212,175,55,0.4)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
             >
               {/* Image Header */}
@@ -86,7 +91,7 @@ export default function Services() {
                 {/* Dynamic Trigger Button: Opens modal & pre-selects this service card's event title */}
                 <BookServiceButton serviceTitle={service.title} />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
