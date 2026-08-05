@@ -457,58 +457,44 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
 
         <h3 className="text-lg md:text-xl font-bold text-white tracking-tight mb-3">Create Menu Dish</h3>
         
-        <form onSubmit={handleAddDish} className="space-y-3 w-full max-w-full text-xs">
-          {/* Row 1: Item Name & Price side-by-side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-            <div>
-              <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
-                Item Name
-              </label>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Malabar Fish Curry"
-                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs transition-colors font-semibold"
-              />
-            </div>
-
-            <div>
-              <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
-                <DollarSign className="w-3.5 h-3.5 text-[#D4AF37]" /> Price
-              </label>
-              <input
-                type="text"
-                required
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="₹250 / plate"
-                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs transition-colors font-semibold"
-              />
-            </div>
+        <form onSubmit={handleAddDish} className="space-y-3.5 w-full max-w-full text-xs">
+          {/* Item Name */}
+          <div className="w-full">
+            <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+              Item Name
+            </label>
+            <input
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Malabar Fish Curry"
+              className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors font-semibold"
+            />
           </div>
 
-          {/* Row 2: Category (with Main Course Sub-Course Selector) & Meal Types side-by-side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full items-start">
+          {/* Category/Price row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full items-start">
             <div>
-              <label className="flex items-center justify-between gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
-                <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5 text-[#D4AF37]" /> Category</span>
+              <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+                <Tag className="w-3.5 h-3.5 text-[#D4AF37]" /> Category
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs transition-colors cursor-pointer font-semibold"
+                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors cursor-pointer font-semibold"
               >
                 {availableCategories.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
 
-              {/* Conditional Rendering: Main Course Sub-Category selector */}
+              {/* Conditional Sub-Category Dropdown / Radio buttons immediately below category */}
               {category === "Main Course" && (
-                <div className="mt-2 animate-fadeIn bg-[#0D0D0D] p-2 rounded-xl border border-[#D4AF37]/30">
-                  <label className="block text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider mb-1.5">Select Course</label>
+                <div className="mt-2.5 animate-fadeIn bg-[#0D0D0D] p-2.5 rounded-xl border border-[#D4AF37]/40 shadow-inner">
+                  <label className="block text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider mb-1.5">
+                    COURSE TYPE
+                  </label>
                   <div className="grid grid-cols-2 gap-1.5">
                     {["1st Course", "2nd Course"].map((course) => (
                       <button
@@ -518,7 +504,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                         className={`py-1.5 px-2 rounded-lg border text-[11px] font-extrabold transition-all cursor-pointer ${
                           subCategory === course
                             ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-sm"
-                            : "bg-[#18181B] text-gray-400 border-white/10 hover:text-white"
+                            : "bg-[#18181B] text-gray-400 border-white/15 hover:text-white"
                         }`}
                       >
                         {course}
@@ -531,32 +517,47 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
 
             <div>
               <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
-                <Utensils className="w-3.5 h-3.5 text-[#D4AF37]" /> Meal Types
+                <DollarSign className="w-3.5 h-3.5 text-[#D4AF37]" /> Price
               </label>
-              <div className="grid grid-cols-3 gap-1">
-                {["Breakfast", "Lunch", "Dinner"].map((meal) => {
-                  const isSelected = suitableMeals.includes(meal);
-                  return (
-                    <label
-                      key={meal}
-                      onClick={(e) => { e.preventDefault(); toggleSuitableMeal(meal); }}
-                      className={`py-1.5 px-1 rounded-lg border text-[10px] font-bold flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all select-none ${
-                        isSelected
-                          ? "bg-[#D4AF37]/20 border-[#D4AF37] text-[#D4AF37] font-extrabold"
-                          : "bg-[#0D0D0D] border-white/10 text-gray-400 hover:text-gray-200 hover:border-white/20"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        readOnly
-                        className="w-2.5 h-2.5 accent-[#D4AF37] rounded cursor-pointer pointer-events-none shrink-0"
-                      />
-                      <span className="truncate">{meal === "Breakfast" ? "Brkfst" : meal}</span>
-                    </label>
-                  );
-                })}
-              </div>
+              <input
+                type="text"
+                required
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="₹250 / plate"
+                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors font-semibold"
+              />
+            </div>
+          </div>
+
+          {/* SUITABLE FOR (MEAL TYPES) Checkboxes directly below Category/Price row */}
+          <div className="w-full pt-1">
+            <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-1.5">
+              <Utensils className="w-3.5 h-3.5 text-[#D4AF37]" /> SUITABLE FOR (MEAL TYPES)
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {["Breakfast", "Lunch", "Dinner"].map((meal) => {
+                const isSelected = suitableMeals.includes(meal);
+                return (
+                  <label
+                    key={meal}
+                    onClick={(e) => { e.preventDefault(); toggleSuitableMeal(meal); }}
+                    className={`px-2.5 py-2 rounded-xl border text-xs font-bold flex items-center justify-between cursor-pointer transition-all select-none ${
+                      isSelected
+                        ? "bg-[#D4AF37]/20 border-[#D4AF37] text-[#D4AF37] shadow-inner"
+                        : "bg-[#0D0D0D] border-white/10 text-gray-400 hover:border-white/25 hover:text-gray-200"
+                    }`}
+                  >
+                    <span>{meal}</span>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      readOnly
+                      className="w-3.5 h-3.5 accent-[#D4AF37] rounded cursor-pointer pointer-events-none"
+                    />
+                  </label>
+                );
+              })}
             </div>
           </div>
 
