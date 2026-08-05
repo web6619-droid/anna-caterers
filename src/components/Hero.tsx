@@ -18,7 +18,7 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 md:px-10 lg:px-8 w-full pt-28 sm:pt-24 pb-16 md:py-0">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 md:px-10 lg:px-8 w-full pt-28 sm:pt-24 pb-16 md:py-0">
         <div className="max-w-2xl">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white leading-[1.15] sm:leading-[1.1] tracking-tight mb-6 animate-hero-spring">
             We Serve You<br />
@@ -30,11 +30,11 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
             <Link 
               href="/services"
-              className="w-full sm:w-auto text-center px-6 md:px-8 py-3.5 md:py-4 bg-gold text-black font-extrabold rounded-full hover:bg-gold-hover hover:scale-[1.03] active:scale-95 transition-all duration-300 tracking-wide text-sm sm:text-base md:text-lg inline-block shadow-xl shadow-gold/20 hover:shadow-[0_8px_25px_rgba(212,175,55,0.45)]"
+              className="w-full sm:w-auto min-h-[44px] flex items-center justify-center text-center px-6 md:px-8 py-3.5 md:py-4 bg-gold text-black font-extrabold rounded-full hover:bg-gold-hover hover:scale-[1.03] active:scale-95 transition-all duration-300 tracking-wide text-sm sm:text-base md:text-lg shadow-xl shadow-gold/20 hover:shadow-[0_8px_25px_rgba(212,175,55,0.45)]"
             >
               VIEW OUR SERVICES
             </Link>
-            <div className="flex items-center justify-center gap-2 text-white bg-white/5 px-5 py-3 md:px-6 md:py-3 rounded-full backdrop-blur-sm border border-white/10 w-full sm:w-auto">
+            <div className="flex items-center justify-center gap-2 min-h-[44px] text-white bg-white/5 px-5 py-3 md:px-6 md:py-3 rounded-full backdrop-blur-sm border border-white/10 w-full sm:w-auto">
               <span className="text-gold text-lg md:text-xl">★</span>
               <span className="font-bold text-sm md:text-base">4.8</span>
               <span className="text-gray-400 text-xs md:text-sm">/ 5 Rating</span>

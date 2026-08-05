@@ -118,7 +118,8 @@ async function seedDatabase() {
     
     for (let i = 0; i < menuData.length; i++) {
       const item = menuData[i];
-      const unsplashUrl = `https://placehold.co/800x600/1e1e1e/eab308.png?text=${encodeURIComponent(item.title)}`;
+      const firstWord = item.title.split(' ')[0];
+      const unsplashUrl = `https://loremflickr.com/800/600/food,${encodeURIComponent(firstWord)}/all?lock=${i}`;
       
       console.log(`[${i + 1}/${menuData.length}] Uploading image for: ${item.title}`);
       

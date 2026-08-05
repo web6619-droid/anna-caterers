@@ -201,16 +201,16 @@ export default function MenuClient() {
   });
 
   return (
-    <section className="py-24 bg-[#0f0f0f] text-white pb-44 min-h-screen">
+    <section className="py-12 sm:py-24 bg-[#0f0f0f] text-white pb-48 sm:pb-44 min-h-screen overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Page Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-[#D4AF37] tracking-[0.2em] text-xs md:text-sm font-extrabold uppercase block mb-3 flex items-center justify-center gap-2">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-2">
+          <span className="text-[#D4AF37] tracking-[0.2em] text-xs md:text-sm font-extrabold uppercase mb-3 flex items-center justify-center gap-2">
             <Sparkles className="w-4 h-4 text-[#D4AF37]" />
             <span>Interactive Culinary Cart</span>
           </span>
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-5 tracking-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-5 tracking-tight">
             Curate Your <span className="text-[#D4AF37] italic font-serif">Feast.</span>
           </h1>
           <p className="text-[#a0a0a0] text-sm sm:text-base md:text-lg leading-relaxed">
@@ -230,7 +230,7 @@ export default function MenuClient() {
           <div className="animate-in fade-in duration-500">
             
             {/* Primary Logical Category Pills */}
-            <div className="flex overflow-x-auto whitespace-nowrap md:flex-wrap justify-start md:justify-center gap-2 sm:gap-3 mb-6 pb-2 md:pb-0 hide-scrollbar scrollbar-none">
+            <div className="flex overflow-x-auto whitespace-nowrap gap-2 pb-2 no-scrollbar sm:gap-3 mb-6 md:pb-0 justify-start md:justify-center">
               {LOGICAL_CATEGORIES.map((category) => (
                 <button
                   key={category}
@@ -240,7 +240,7 @@ export default function MenuClient() {
                       setActiveSubCourse("1st Course");
                     }
                   }}
-                  className={`px-5 py-2.5 md:px-8 md:py-3 rounded-full text-xs sm:text-sm font-bold tracking-wider transition-all duration-300 uppercase cursor-pointer shrink-0 active:scale-95 ${
+                  className={`px-5 py-2.5 md:px-8 md:py-3 min-h-[44px] flex items-center justify-center rounded-full text-xs sm:text-sm font-bold tracking-wider transition-all duration-300 uppercase cursor-pointer shrink-0 active:scale-95 ${
                     activeFilter.toLowerCase() === category.toLowerCase()
                       ? "bg-[#D4AF37] text-black font-extrabold shadow-[0_4px_25px_rgba(212,175,55,0.35)] border-2 border-[#D4AF37]"
                       : "bg-[#1a1a1a] text-white border border-white/10 hover:bg-white/10 hover:border-white/20"
@@ -253,13 +253,13 @@ export default function MenuClient() {
 
             {/* Secondary Sub-category Navigation for Main Course */}
             {activeFilter === "Main Course" && (
-              <div className="flex justify-center items-center gap-2 sm:gap-4 mb-10 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex justify-center items-center gap-2 sm:gap-4 mb-8 sm:mb-10 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="bg-[#151515] p-1.5 rounded-2xl border border-white/10 flex gap-2">
                   {MAIN_COURSE_SUBTABS.map((sub) => (
                     <button
                       key={sub}
                       onClick={() => setActiveSubCourse(sub)}
-                      className={`px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer active:scale-95 ${
+                      className={`px-4 sm:px-6 py-2 min-h-[44px] flex items-center justify-center rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer active:scale-95 ${
                         activeSubCourse === sub
                           ? "bg-white/15 text-[#D4AF37] shadow-inner font-extrabold"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
@@ -274,15 +274,15 @@ export default function MenuClient() {
 
             {/* Graceful Empty State vs Interactive Menu Grid */}
             {sortedAndFilteredItems.length === 0 ? (
-              <div className="text-center py-20 bg-[#151515] rounded-3xl border border-white/10 max-w-2xl mx-auto p-8 shadow-2xl mt-8">
+              <div className="text-center py-16 sm:py-20 bg-[#151515] rounded-3xl border border-white/10 max-w-2xl mx-auto px-4 py-8 sm:p-8 shadow-2xl mt-8">
                 <UtensilsCrossed className="w-12 h-12 text-[#D4AF37]/40 mx-auto mb-4" />
-                <p className="text-xl sm:text-2xl font-bold text-white mb-2">No items listed under {activeFilter === "Main Course" ? `${activeFilter} (${activeSubCourse})` : activeFilter}.</p>
+                <p className="text-lg sm:text-2xl font-bold text-white mb-2">No items listed under {activeFilter === "Main Course" ? `${activeFilter} (${activeSubCourse})` : activeFilter}.</p>
                 <p className="text-xs sm:text-sm text-gray-400">
                   Our chefs are continuously curating exciting seasonal specialties for this tier. Explore our other course tabs to add items to your event repertoire!
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 mt-6 sm:mt-8">
                 {sortedAndFilteredItems.map((item, index) => {
                   const selected = isDishSelected(item.id);
                   return (
@@ -310,14 +310,14 @@ export default function MenuClient() {
 
                         {/* Price Badge */}
                         {item.price && (
-                          <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-black/85 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-[10px] sm:text-xs font-black z-10 shadow-md">
+                          <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 px-3 py-1 rounded-full bg-black/85 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-black z-10 shadow-md">
                             {typeof item.price === "number" ? `₹${item.price}${item.unit ? ` / ${item.unit}` : ""}` : item.price}
                           </div>
                         )}
 
                         {/* Selected Indicator Pill */}
                         {selected && (
-                          <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-black text-[9px] sm:text-[11px] font-extrabold flex items-center gap-1 shadow-lg z-10 animate-in fade-in zoom-in">
+                          <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-black text-[10px] sm:text-[11px] font-extrabold flex items-center gap-1 shadow-lg z-10 animate-in fade-in zoom-in">
                             <Check className="w-3 h-3 stroke-[3]" />
                             <span>SELECTED</span>
                           </div>
@@ -325,16 +325,16 @@ export default function MenuClient() {
                       </div>
 
                       {/* Card Body */}
-                      <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between gap-4">
+                      <div className="p-4 sm:p-6 flex-1 flex flex-col justify-between gap-4">
                         <div>
-                          <span className="text-gray-400 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest block mb-1">
+                          <span className="text-gray-400 text-[10px] font-extrabold uppercase tracking-widest block mb-1.5">
                             {item.category} {(item.subCourse || item.subCategory) ? `• ${item.subCourse || item.subCategory}` : ""}
                           </span>
-                          <h3 className="text-white text-sm sm:text-base md:text-lg font-bold leading-snug line-clamp-2">
+                          <h3 className="text-white text-base sm:text-lg font-bold leading-snug line-clamp-2">
                             {item.title}
                           </h3>
                           {item.description && (
-                            <p className="text-[11px] sm:text-xs text-gray-400 line-clamp-2 mt-1.5 leading-relaxed font-normal">
+                            <p className="text-xs text-gray-300 line-clamp-2 mt-2 leading-relaxed font-normal">
                               {item.description}
                             </p>
                           )}
@@ -360,7 +360,7 @@ export default function MenuClient() {
                               addToMenu(selectedItem);
                             }
                           }}
-                          className={`w-full py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.96] ${
+                          className={`w-full py-3 px-4 min-h-[44px] rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.96] ${
                             selected
                               ? "bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500 hover:text-white"
                               : "bg-[#D4AF37] text-black hover:bg-[#c49f2b] shadow-lg shadow-[#D4AF37]/15"
@@ -389,7 +389,7 @@ export default function MenuClient() {
 
         {/* Floating Live Cart Bar */}
         {selectedMenu.length > 0 && (
-          <div className="fixed bottom-4 left-3 right-3 sm:left-6 sm:right-6 lg:left-1/2 lg:-translate-x-1/2 max-w-5xl w-auto z-50 animate-in slide-in-from-bottom-6 fade-in duration-300">
+          <div className="fixed bottom-4 sm:bottom-6 left-3 right-3 sm:left-6 sm:right-6 lg:left-1/2 lg:-translate-x-1/2 max-w-5xl w-auto z-50 pb-safe animate-in slide-in-from-bottom-6 fade-in duration-300">
             <div className="bg-[#151515]/95 backdrop-blur-2xl border-2 border-[#D4AF37] rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-[0_20px_70px_rgba(0,0,0,0.95),0_0_35px_rgba(212,175,55,0.25)] flex flex-col sm:flex-row items-center justify-between gap-4">
               
               <div className="flex items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
@@ -402,7 +402,7 @@ export default function MenuClient() {
                     <span className="text-white font-extrabold text-sm sm:text-lg tracking-tight">
                       {selectedMenu.length} {selectedMenu.length === 1 ? "Dish" : "Dishes"} Selected
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-[#D4AF37] text-[11px] sm:text-xs font-black tracking-wide border border-[#D4AF37]/20">
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-[#D4AF37] text-xs font-black tracking-wide border border-[#D4AF37]/20">
                       ₹{perGuestTotal.toLocaleString("en-IN")} / plate
                     </span>
                   </div>
@@ -421,7 +421,7 @@ export default function MenuClient() {
                 <button
                   onClick={handleFinalizeBooking}
                   disabled={isFinalizing}
-                  className={`w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2.5 ${
+                  className={`w-full sm:w-auto min-h-[44px] px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2.5 ${
                     isFinalizing
                       ? "bg-gray-600 text-gray-300 cursor-not-allowed shadow-none"
                       : "bg-[#D4AF37] text-black hover:bg-[#b5952f] hover:scale-[1.03] active:scale-95 shadow-xl shadow-[#D4AF37]/30 cursor-pointer"
@@ -443,7 +443,7 @@ export default function MenuClient() {
                 <button
                   onClick={handleCancelBooking}
                   type="button"
-                  className="text-xs text-neutral-400 hover:text-white underline mt-2 text-center w-full transition-colors cursor-pointer"
+                  className="text-xs text-neutral-400 hover:text-white underline mt-2 py-1 text-center w-full transition-colors cursor-pointer"
                 >
                   Cancel Booking
                 </button>
@@ -451,7 +451,6 @@ export default function MenuClient() {
             </div>
           </div>
         )}
-
       </div>
     </section>
   );

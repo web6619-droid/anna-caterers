@@ -37,11 +37,13 @@ body {
 
 /* Hide scrollbars for clean horizontal scrolling on mobile filter pills and galleries */
 .hide-scrollbar::-webkit-scrollbar,
-.scrollbar-none::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .hide-scrollbar,
-.scrollbar-none {
+.scrollbar-none,
+.no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
