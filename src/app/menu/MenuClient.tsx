@@ -282,7 +282,7 @@ export default function MenuClient() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 mt-6 sm:mt-8">
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6 mt-4 sm:mt-8">
                 {sortedAndFilteredItems.map((item, index) => {
                   const selected = isDishSelected(item.id);
                   return (
@@ -292,14 +292,14 @@ export default function MenuClient() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-20px" }}
                       transition={{ duration: 0.25, delay: index * 0.05, ease: "easeOut" }}
-                      className={`relative rounded-2xl sm:rounded-[24px] overflow-hidden flex flex-col transition-all duration-300 group ${
+                      className={`relative rounded-xl sm:rounded-[24px] overflow-hidden flex flex-col transition-all duration-300 group ${
                         selected
                           ? "bg-[#1c1a13] border-2 border-[#D4AF37] shadow-[0_12px_35px_rgba(212,175,55,0.25)] -translate-y-1"
                           : "bg-[#151515] border border-white/10 hover:border-[#D4AF37]/50 hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(0,0,0,0.7)]"
                       }`}
                     >
                       {/* Top Image Banner */}
-                      <div className="relative aspect-[16/11] w-full overflow-hidden bg-[#1f1f1f] shrink-0">
+                      <div className="relative h-24 sm:h-44 md:h-auto md:aspect-[16/11] w-full overflow-hidden bg-[#1f1f1f] shrink-0">
                         <Image
                           src={item.imageUrl}
                           alt={item.title}
@@ -310,31 +310,31 @@ export default function MenuClient() {
 
                         {/* Price Badge */}
                         {item.price && (
-                          <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 px-3 py-1 rounded-full bg-black/85 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-black z-10 shadow-md">
+                          <div className="absolute top-1.5 right-1.5 sm:top-3.5 sm:right-3.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black/85 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-[10px] sm:text-xs font-black z-10 shadow-md">
                             {typeof item.price === "number" ? `₹${item.price}${item.unit ? ` / ${item.unit}` : ""}` : item.price}
                           </div>
                         )}
 
                         {/* Selected Indicator Pill */}
                         {selected && (
-                          <div className="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 px-2.5 py-1 rounded-full bg-[#D4AF37] text-black text-[10px] sm:text-[11px] font-extrabold flex items-center gap-1 shadow-lg z-10 animate-in fade-in zoom-in">
-                            <Check className="w-3 h-3 stroke-[3]" />
+                          <div className="absolute top-1.5 left-1.5 sm:top-3.5 sm:left-3.5 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-[#D4AF37] text-black text-[8px] sm:text-[11px] font-extrabold flex items-center gap-0.5 sm:gap-1 shadow-lg z-10 animate-in fade-in zoom-in">
+                            <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 stroke-[3]" />
                             <span>SELECTED</span>
                           </div>
                         )}
                       </div>
 
                       {/* Card Body */}
-                      <div className="p-4 sm:p-6 flex-1 flex flex-col justify-between gap-4">
+                      <div className="p-2.5 sm:p-6 flex-1 flex flex-col justify-between gap-2 sm:gap-4">
                         <div>
-                          <span className="text-gray-400 text-[10px] font-extrabold uppercase tracking-widest block mb-1.5">
+                          <span className="text-gray-400 text-[8px] sm:text-[10px] font-extrabold uppercase tracking-widest block mb-0.5 sm:mb-1.5 truncate">
                             {item.category} {(item.subCourse || item.subCategory) ? `• ${item.subCourse || item.subCategory}` : ""}
                           </span>
-                          <h3 className="text-white text-base sm:text-lg font-bold leading-snug line-clamp-2">
+                          <h3 className="text-white text-xs sm:text-lg font-bold leading-tight sm:leading-snug line-clamp-1 sm:line-clamp-2" title={item.title}>
                             {item.title}
                           </h3>
                           {item.description && (
-                            <p className="text-xs text-gray-300 line-clamp-2 mt-2 leading-relaxed font-normal">
+                            <p className="hidden sm:block text-xs text-gray-300 line-clamp-2 mt-2 leading-relaxed font-normal">
                               {item.description}
                             </p>
                           )}
@@ -360,7 +360,7 @@ export default function MenuClient() {
                               addToMenu(selectedItem);
                             }
                           }}
-                          className={`w-full py-3 px-4 min-h-[44px] rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.96] ${
+                          className={`w-full py-2 px-2 sm:py-3 sm:px-4 min-h-[38px] sm:min-h-[44px] rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-extrabold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer active:scale-[0.96] ${
                             selected
                               ? "bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500 hover:text-white"
                               : "bg-[#D4AF37] text-black hover:bg-[#c49f2b] shadow-lg shadow-[#D4AF37]/15"
@@ -368,13 +368,13 @@ export default function MenuClient() {
                         >
                           {selected ? (
                             <>
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                               <span>Remove</span>
                             </>
                           ) : (
                             <>
-                              <Plus className="w-4 h-4 stroke-[3]" />
-                              <span>Add to Menu</span>
+                              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3] shrink-0" />
+                              <span>Add<span className="hidden sm:inline"> to Menu</span></span>
                             </>
                           )}
                         </button>
