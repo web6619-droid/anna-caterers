@@ -50,6 +50,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   const [loading, setLoading] = useState(true);
   const [catLoading, setCatLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("All");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [permissionBlocked, setPermissionBlocked] = useState(false);
@@ -668,7 +669,14 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                   maxFiles: 1,
                   resourceType: "image",
                 }}
+                onUploadAdded={() => setIsUploading(true)}
+                onClose={() => setIsUploading(false)}
+                onError={() => {
+                  setIsUploading(false);
+                  showToast("error", "Failed to upload image to Cloudinary.");
+                }}
                 onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                  setIsUploading(false);
                   if (result.info && typeof result.info === "object" && result.info.secure_url) {
                     setImageUrl(result.info.secure_url);
                     if (result.info.public_id) setImagePublicId(result.info.public_id);
@@ -691,11 +699,11 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
 
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || isUploading}
             className="w-full py-3 rounded-full bg-[#D4AF37] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#b5952f] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#D4AF37]/15 disabled:opacity-50 mt-2"
           >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4 stroke-[3]" />}
-            <span>+ Save to Menu Catalogue</span>
+            {saving || isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4 stroke-[3]" />}
+            <span>{isUploading ? "Uploading Photo..." : (saving ? "Saving Dish..." : "+ Save to Menu Catalogue")}</span>
           </button>
         </form>
       </div>
@@ -887,7 +895,14 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                                     maxFiles: 1,
                                     resourceType: "image",
                                   }}
+                                  onUploadAdded={() => setIsUploading(true)}
+                                  onClose={() => setIsUploading(false)}
+                                  onError={() => {
+                                    setIsUploading(false);
+                                    showToast("error", "Failed to replace photo on Cloudinary.");
+                                  }}
                                   onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                                    setIsUploading(false);
                                     if (result.info && typeof result.info === "object" && result.info.secure_url) {
                                       setEditForm((prev) => ({
                                         ...prev,
@@ -918,7 +933,14 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                                 maxFiles: 1,
                                 resourceType: "image",
                               }}
+                              onUploadAdded={() => setIsUploading(true)}
+                              onClose={() => setIsUploading(false)}
+                              onError={() => {
+                                setIsUploading(false);
+                                showToast("error", "Failed to upload photo on Cloudinary.");
+                              }}
                               onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                                setIsUploading(false);
                                 if (result.info && typeof result.info === "object" && result.info.secure_url) {
                                   setEditForm((prev) => ({
                                     ...prev,
@@ -942,7 +964,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                           )}
                         </div>
 
-                        <div className="flex justify-end gap-2 pt-2">
+                        <div className="flex justify-end items-center gap-2 pt-2">
                           <button
                             onClick={() => setEditingId(null)}
                             className="px-3 py-1.5 rounded-lg bg-white/5 text-gray-400 text-xs font-bold"
@@ -951,10 +973,11 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                           </button>
                           <button
                             onClick={() => saveEdit(item.id)}
-                            disabled={saving}
-                            className="px-4 py-1.5 rounded-lg bg-[#D4AF37] text-black text-xs font-bold"
+                            disabled={saving || isUploading}
+                            className="px-4 py-1.5 rounded-lg bg-[#D4AF37] text-black text-xs font-bold flex items-center gap-1 disabled:opacity-50"
                           >
-                            Save
+                            {saving || isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                            <span>{saving ? "Saving..." : (isUploading ? "Uploading..." : "Save")}</span>
                           </button>
                         </div>
                       </div>

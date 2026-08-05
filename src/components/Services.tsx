@@ -12,11 +12,16 @@ export default function Services() {
   const [dbServices, setDbServices] = useState<any[]>([]);
 
   useEffect(() => {
-    const q = query(collection(db, "services"), orderBy("createdAt", "desc"));
+    const q = query(collection(db, "services"));
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as any[];
+        items.sort((a, b) => {
+          const timeB = b?.createdAt?.toMillis?.() || b?.createdAt?.seconds * 1000 || 0;
+          const timeA = a?.createdAt?.toMillis?.() || a?.createdAt?.seconds * 1000 || 0;
+          return timeB - timeA;
+        });
         setDbServices(items);
       },
       (error) => {

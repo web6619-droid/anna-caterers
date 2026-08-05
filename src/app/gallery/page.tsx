@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   description: "Explore our recent culinary masterpieces and event setups, from intimate gatherings to grand corporate galas and luxury weddings across Kerala.",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export default function GalleryPage() {
   return (
     <main className="min-h-screen bg-[#0f0f0f] text-white">
