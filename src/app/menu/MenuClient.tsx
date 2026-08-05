@@ -18,7 +18,8 @@ type MenuItem = {
   subCategory?: string;
   subCourse?: string;
   imageUrl: string;
-  price?: string;
+  price?: string | number;
+  unit?: string;
   description?: string;
   suitableMeals?: string[];
 };
@@ -45,12 +46,20 @@ export default function MenuClient() {
   const router = useRouter();
 
   useEffect(() => {
-    const qMenu = query(collection(db, "menu_items"), orderBy("createdAt", "desc"));
+    // Fetch directly from 'menu_items' collection without orderBy constraints in query
+    // to prevent Firestore from filtering out seeded documents lacking indexable timestamps.
+    const qMenu = query(collection(db, "menu_items"));
     const unsubscribeMenu = onSnapshot(qMenu, (snapshot) => {
       const docs = snapshot.docs.map((d) => ({
         id: d.id,
         ...d.data(),
       })) as MenuItem[];
+      // Safe client-side sorting by creation time or title
+      docs.sort((a: any, b: any) => {
+        const timeB = b?.createdAt?.toMillis?.() || b?.createdAt?.seconds * 1000 || 0;
+        const timeA = a?.createdAt?.toMillis?.() || a?.createdAt?.seconds * 1000 || 0;
+        return timeB - timeA;
+      });
       setDbItems(docs);
       setMenuLoaded(true);
     }, (err) => {
@@ -302,7 +311,7 @@ export default function MenuClient() {
                         {/* Price Badge */}
                         {item.price && (
                           <div className="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-black/85 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-[10px] sm:text-xs font-black z-10 shadow-md">
-                            {item.price}
+                            {typeof item.price === "number" ? `₹${item.price}${item.unit ? ` / ${item.unit}` : ""}` : item.price}
                           </div>
                         )}
 
@@ -346,7 +355,7 @@ export default function MenuClient() {
                                 category: item.category,
                                 imageUrl: item.imageUrl,
                                 description: item.description,
-                                rawPrice: item.price,
+                                rawPrice: typeof item.price === "number" ? `₹${item.price}${item.unit ? ` / ${item.unit}` : ""}` : item.price,
                               };
                               addToMenu(selectedItem);
                             }

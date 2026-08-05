@@ -96,14 +96,19 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2. Subscribe to menu_items collection (with backward compat read/sync)
+  // 2. Subscribe to menu_items collection (with backward compat read/sync and unconstrained query)
   useEffect(() => {
-    const qMenu = query(collection(db, "menu_items"), orderBy("createdAt", "desc"));
+    const qMenu = query(collection(db, "menu_items"));
     const unsubscribeMenu = onSnapshot(qMenu, (snapshot) => {
       const docs = snapshot.docs.map((d) => ({
         id: d.id,
         ...d.data(),
       })) as MenuItem[];
+      docs.sort((a: any, b: any) => {
+        const timeB = b?.createdAt?.toMillis?.() || b?.createdAt?.seconds * 1000 || 0;
+        const timeA = a?.createdAt?.toMillis?.() || a?.createdAt?.seconds * 1000 || 0;
+        return timeB - timeA;
+      });
       setItems(docs);
       setLoading(false);
     }, (err: any) => {

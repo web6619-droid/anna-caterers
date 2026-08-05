@@ -4,6 +4,10 @@ import FloatingActions from "@/components/FloatingActions";
 import MenuClient from "./MenuClient";
 import { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export const metadata: Metadata = {
   title: "Our Menu | Anna Caterers",
   description: "Explore our culinary offerings, from traditional Kerala Sadyas and Biryanis to luxury private dining, exquisite starters, and beverages.",
