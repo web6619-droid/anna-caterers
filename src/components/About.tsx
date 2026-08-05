@@ -1,31 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
-import VisibilitySensor from "react-visibility-sensor";
 
 function StatCounter({ end, decimals = 0, suffix = "", duration = 2 }: { end: number; decimals?: number; suffix?: string; duration?: number }) {
-  const [hasTriggered, setHasTriggered] = useState(false);
-
   return (
-    <CountUp start={0} end={end} decimals={decimals} duration={duration} separator="" suffix={suffix} redraw={false}>
-      {({ countUpRef, start }) => (
-        <VisibilitySensor
-          onChange={(isVisible: boolean) => {
-            if (isVisible && !hasTriggered) {
-              setHasTriggered(true);
-              start();
-            }
-          }}
-          delayedCall
-          partialVisibility
-        >
-          <span ref={countUpRef} />
-        </VisibilitySensor>
-      )}
-    </CountUp>
+    <CountUp 
+      start={0} 
+      end={end} 
+      decimals={decimals} 
+      duration={duration} 
+      separator="" 
+      suffix={suffix} 
+      enableScrollSpy={true}
+      scrollSpyOnce={true}
+    />
   );
 }
 
