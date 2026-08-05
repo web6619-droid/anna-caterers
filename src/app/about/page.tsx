@@ -7,6 +7,32 @@ import FloatingActions from "@/components/FloatingActions";
 import { Clock, Users, ChefHat, Star, Plus, Minus, Award } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from "framer-motion";
+import CountUp from "react-countup";
+import VisibilitySensor from "react-visibility-sensor";
+
+function StatCounter({ end, decimals = 0, suffix = "", duration = 2 }: { end: number; decimals?: number; suffix?: string; duration?: number }) {
+  const [hasTriggered, setHasTriggered] = useState(false);
+
+  return (
+    <CountUp start={0} end={end} decimals={decimals} duration={duration} separator="" suffix={suffix} redraw={false}>
+      {({ countUpRef, start }) => (
+        <VisibilitySensor
+          onChange={(isVisible: boolean) => {
+            if (isVisible && !hasTriggered) {
+              setHasTriggered(true);
+              start();
+            }
+          }}
+          delayedCall
+          partialVisibility
+        >
+          <span ref={countUpRef} />
+        </VisibilitySensor>
+      )}
+    </CountUp>
+  );
+}
 
 export default function AboutPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -69,22 +95,31 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-6 divide-x-0 md:divide-x divide-white/10">
             <div className="flex flex-col items-center text-center">
               <Clock className="text-gold w-8 h-8 mb-4" />
-              <p className="text-4xl font-bold mb-2">30+</p>
+              <p className="text-4xl font-bold mb-2 min-h-[40px] flex items-center justify-center">
+                <StatCounter end={30} suffix="+" duration={2} />
+              </p>
               <p className="text-xs tracking-widest text-[#a0a0a0] uppercase font-semibold">Years of Excellence</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <Users className="text-gold w-8 h-8 mb-4" />
-              <p className="text-4xl font-bold mb-2">5000+</p>
+              <p className="text-4xl font-bold mb-2 min-h-[40px] flex items-center justify-center">
+                <StatCounter end={5000} suffix="+" duration={2.5} />
+              </p>
               <p className="text-xs tracking-widest text-[#a0a0a0] uppercase font-semibold">Satisfied Clients</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <ChefHat className="text-gold w-8 h-8 mb-4" />
-              <p className="text-4xl font-bold mb-2">50+</p>
+              <p className="text-4xl font-bold mb-2 min-h-[40px] flex items-center justify-center">
+                <StatCounter end={50} suffix="+" duration={2} />
+              </p>
               <p className="text-xs tracking-widest text-[#a0a0a0] uppercase font-semibold">Expert Chefs</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <Star className="text-gold w-8 h-8 mb-4" />
-              <p className="text-4xl font-bold mb-2">4.8<span className="text-gold">★</span></p>
+              <p className="text-4xl font-bold mb-2 min-h-[40px] flex items-center justify-center">
+                <StatCounter end={4.8} decimals={1} duration={2} />
+                <span className="text-gold ml-0.5">★</span>
+              </p>
               <p className="text-xs tracking-widest text-[#a0a0a0] uppercase font-semibold">Average Rating</p>
             </div>
           </div>
@@ -98,9 +133,15 @@ export default function AboutPage() {
             {/* Left Content */}
             <div>
               <h3 className="text-gold tracking-[0.2em] text-sm font-semibold uppercase mb-6">OUR VISION</h3>
-              <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">
+              <motion.h2 
+                initial={{ opacity: 0, y: 15 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                viewport={{ once: true, margin: "-20px" }} 
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="text-4xl md:text-5xl font-bold mb-8 tracking-tight"
+              >
                 Elegance on <span className="text-gold italic font-serif">Every Plate.</span>
-              </h2>
+              </motion.h2>
               <div className="space-y-6 text-[#a0a0a0] text-lg leading-relaxed mb-10">
                 <p>
                   To us, dining is an art form. Our masterful culinary team harmonizes authentic local flavors with international flair, crafting bespoke menus that do more than simply feed your guests—they captivate them.
