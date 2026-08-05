@@ -488,36 +488,11 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
-
-              {/* Conditional Sub-Category Dropdown / Radio buttons immediately below category */}
-              {category === "Main Course" && (
-                <div className="mt-2.5 animate-fadeIn bg-[#0D0D0D] p-2.5 rounded-xl border border-[#D4AF37]/40 shadow-inner">
-                  <label className="block text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider mb-1.5">
-                    COURSE TYPE
-                  </label>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {["1st Course", "2nd Course"].map((course) => (
-                      <button
-                        key={course}
-                        type="button"
-                        onClick={() => setSubCategory(course)}
-                        className={`py-1.5 px-2 rounded-lg border text-[11px] font-extrabold transition-all cursor-pointer ${
-                          subCategory === course
-                            ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-sm"
-                            : "bg-[#18181B] text-gray-400 border-white/15 hover:text-white"
-                        }`}
-                      >
-                        {course}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
             <div>
               <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
-                <DollarSign className="w-3.5 h-3.5 text-[#D4AF37]" /> Price
+                <DollarSign className="w-3.5 h-3.5 text-[#D4AF37]" /> Price / Unit
               </label>
               <input
                 type="text"
@@ -530,34 +505,43 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
             </div>
           </div>
 
-          {/* SUITABLE FOR (MEAL TYPES) Checkboxes directly below Category/Price row */}
-          <div className="w-full pt-1">
-            <label className="flex items-center gap-1.5 text-[11px] font-bold text-gray-300 uppercase tracking-wider mb-1.5">
-              <Utensils className="w-3.5 h-3.5 text-[#D4AF37]" /> SUITABLE FOR (MEAL TYPES)
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {["Breakfast", "Lunch", "Dinner"].map((meal) => {
-                const isSelected = suitableMeals.includes(meal);
-                return (
-                  <label
-                    key={meal}
-                    onClick={(e) => { e.preventDefault(); toggleSuitableMeal(meal); }}
-                    className={`px-2.5 py-2 rounded-xl border text-xs font-bold flex items-center justify-between cursor-pointer transition-all select-none ${
-                      isSelected
-                        ? "bg-[#D4AF37]/20 border-[#D4AF37] text-[#D4AF37] shadow-inner"
-                        : "bg-[#0D0D0D] border-white/10 text-gray-400 hover:border-white/25 hover:text-gray-200"
-                    }`}
-                  >
-                    <span>{meal}</span>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      readOnly
-                      className="w-3.5 h-3.5 accent-[#D4AF37] rounded cursor-pointer pointer-events-none"
-                    />
-                  </label>
-                );
-              })}
+          {/* SUB-CATEGORY DROPDOWN (ONLY SHOWS IF MAIN COURSE) */}
+          {category === 'Main Course' && (
+            <div className="mt-4">
+              <label className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2 block">Course Type</label>
+              <select 
+                value={subCategory} 
+                onChange={(e) => setSubCategory(e.target.value)}
+                className="w-full bg-neutral-900 border border-neutral-800 text-white p-3 rounded-md focus:border-yellow-500 outline-none"
+              >
+                <option value="">Select Course...</option>
+                <option value="1st Course">1st Course</option>
+                <option value="2nd Course">2nd Course</option>
+              </select>
+            </div>
+          )}
+
+          {/* MEAL TYPES CHECKBOXES */}
+          <div className="mt-4">
+            <label className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2 block">Suitable For (Meal Types)</label>
+            <div className="flex space-x-4">
+              {['Breakfast', 'Lunch', 'Dinner'].map((meal) => (
+                <label key={meal} className="flex items-center space-x-2 text-white text-sm cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={suitableMeals.includes(meal)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSuitableMeals([...suitableMeals, meal]);
+                      } else {
+                        setSuitableMeals(suitableMeals.filter(m => m !== meal));
+                      }
+                    }}
+                    className="accent-yellow-500 w-4 h-4"
+                  />
+                  <span>{meal}</span>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -752,67 +736,55 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                             className="bg-[#0D0D0D] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-[#D4AF37] font-semibold"
                           />
                         </div>
-                        {editForm.category === "Main Course" && (
-                          <div className="bg-[#0D0D0D] p-2 rounded-xl border border-[#D4AF37]/30">
-                            <label className="block text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider mb-1">Select Course</label>
-                            <div className="grid grid-cols-2 gap-1.5">
-                              {["1st Course", "2nd Course"].map((course) => {
-                                const isSelected = (editForm.subCategory || editForm.subCourse || "1st Course") === course;
-                                return (
-                                  <button
-                                    key={course}
-                                    type="button"
-                                    onClick={() => setEditForm({ ...editForm, subCategory: course, subCourse: course })}
-                                    className={`py-1 px-2 rounded-lg border text-[11px] font-extrabold transition-all cursor-pointer ${
-                                      isSelected
-                                        ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-sm"
-                                        : "bg-[#18181B] text-gray-400 border-white/10 hover:text-white"
-                                    }`}
-                                  >
-                                    {course}
-                                  </button>
-                                );
-                              })}
-                            </div>
+                        {/* SUB-CATEGORY DROPDOWN (ONLY SHOWS IF MAIN COURSE) */}
+                        {editForm.category === 'Main Course' && (
+                          <div className="mt-4">
+                            <label className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2 block">Course Type</label>
+                            <select 
+                              value={editForm.subCategory || editForm.subCourse || ""} 
+                              onChange={(e) => setEditForm({ ...editForm, subCategory: e.target.value, subCourse: e.target.value })}
+                              className="w-full bg-neutral-900 border border-neutral-800 text-white p-3 rounded-md focus:border-yellow-500 outline-none text-xs"
+                            >
+                              <option value="">Select Course...</option>
+                              <option value="1st Course">1st Course</option>
+                              <option value="2nd Course">2nd Course</option>
+                            </select>
                           </div>
                         )}
-                        <textarea
-                          rows={2}
-                          value={editForm.description || ""}
-                          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                          className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl p-2 text-xs text-gray-300 resize-none"
-                        />
-                        <div>
-                          <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">Suitable For (Meal Types)</label>
-                          <div className="grid grid-cols-3 gap-1.5">
-                            {["Breakfast", "Lunch", "Dinner"].map((meal) => {
-                              const isSelected = (editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"]).includes(meal);
+
+                        {/* MEAL TYPES CHECKBOXES */}
+                        <div className="mt-4">
+                          <label className="text-yellow-500 text-xs font-bold uppercase tracking-wider mb-2 block">Suitable For (Meal Types)</label>
+                          <div className="flex space-x-4">
+                            {['Breakfast', 'Lunch', 'Dinner'].map((meal) => {
+                              const isChecked = (editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"]).includes(meal);
                               return (
-                                <div
-                                  key={meal}
-                                  onClick={() => {
-                                    const prev = editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"];
-                                    const updated = prev.includes(meal) ? prev.filter((m) => m !== meal) : [...prev, meal];
-                                    setEditForm({ ...editForm, suitableMeals: updated });
-                                  }}
-                                  className={`px-2 py-1.5 rounded-lg border text-[11px] font-semibold flex items-center justify-between cursor-pointer transition-all ${
-                                    isSelected
-                                      ? "bg-[#D4AF37]/15 border-[#D4AF37] text-[#D4AF37]"
-                                      : "bg-[#0D0D0D] border-white/10 text-gray-400"
-                                  }`}
-                                >
-                                  <span>{meal}</span>
-                                  <input
-                                    type="checkbox"
-                                    checked={isSelected}
-                                    onChange={() => {}}
-                                    className="w-3 h-3 accent-[#D4AF37] rounded pointer-events-none"
+                                <label key={meal} className="flex items-center space-x-2 text-white text-xs cursor-pointer">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={isChecked}
+                                    onChange={(e) => {
+                                      const prev = editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"];
+                                      if (e.target.checked) {
+                                        setEditForm({ ...editForm, suitableMeals: [...prev, meal] });
+                                      } else {
+                                        setEditForm({ ...editForm, suitableMeals: prev.filter(m => m !== meal) });
+                                      }
+                                    }}
+                                    className="accent-yellow-500 w-4 h-4"
                                   />
-                                </div>
+                                  <span>{meal}</span>
+                                </label>
                               );
                             })}
                           </div>
                         </div>
+                        <textarea
+                          rows={2}
+                          value={editForm.description || ""}
+                          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                          className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl p-2 text-xs text-gray-300 resize-none mt-3"
+                        />
                         <div className="flex justify-end gap-2 pt-1">
                           <button
                             onClick={() => setEditingId(null)}
