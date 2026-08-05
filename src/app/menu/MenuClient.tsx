@@ -15,6 +15,7 @@ type MenuItem = {
   id: string | number;
   title: string;
   category: string;
+  subCategory?: string;
   subCourse?: string;
   imageUrl: string;
   price?: string;
@@ -164,7 +165,7 @@ export default function MenuClient() {
     if (!isCatMatch) return false;
 
     if (activeFilter === "Main Course") {
-      const sub = (item.subCourse || "").trim().toLowerCase();
+      const sub = (item.subCourse || item.subCategory || "").trim().toLowerCase();
       if (sub && sub !== activeSubCourse.toLowerCase()) return false;
       // Map legacy/untagged main course items to 1st Course by default
       if (!sub && activeSubCourse !== "1st Course") return false;
@@ -314,7 +315,7 @@ export default function MenuClient() {
                       <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between gap-4">
                         <div>
                           <span className="text-gray-400 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest block mb-1">
-                            {item.category} {item.subCourse ? `• ${item.subCourse}` : ""}
+                            {item.category} {(item.subCourse || item.subCategory) ? `• ${item.subCourse || item.subCategory}` : ""}
                           </span>
                           <h3 className="text-white text-sm sm:text-base md:text-lg font-bold leading-snug line-clamp-2">
                             {item.title}

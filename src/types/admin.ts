@@ -61,6 +61,8 @@ export interface MenuItem {
   id: string;
   title: string;
   category: string;
+  subCategory?: string;
+  subCourse?: string;
   price: string;
   description: string;
   imageUrl?: string;

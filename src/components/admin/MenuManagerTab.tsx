@@ -49,6 +49,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imagePublicId, setImagePublicId] = useState("");
+  const [subCategory, setSubCategory] = useState<string>("1st Course");
   const [suitableMeals, setSuitableMeals] = useState<string[]>(["Breakfast", "Lunch", "Dinner"]);
 
   const toggleSuitableMeal = (meal: string) => {
@@ -131,9 +132,12 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
     setSaving(true);
     setPermissionBlocked(false);
     try {
+      const finalSubCategory = category === "Main Course" ? subCategory : "";
       await addDoc(collection(db, "menu_items"), {
         title: title.trim(),
         category: category || availableCategories[0] || "Main Course",
+        subCategory: finalSubCategory,
+        subCourse: finalSubCategory,
         price: price.trim(),
         description: description.trim(),
         imageUrl: imageUrl || "https://res.cloudinary.com/pzynujc5/image/upload/f_auto,q_auto/annacaterers/signature-weddings.jpg",
@@ -147,6 +151,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
       setPrice("₹250 / plate");
       setImageUrl("");
       setImagePublicId("");
+      setSubCategory("1st Course");
       setSuitableMeals(["Breakfast", "Lunch", "Dinner"]);
     } catch (err: any) {
       console.error(err);
@@ -164,7 +169,12 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   // Dish Editing & Deletion
   const startEdit = (item: MenuItem) => {
     setEditingId(item.id);
-    setEditForm({ ...item, suitableMeals: item.suitableMeals || ["Breakfast", "Lunch", "Dinner"] });
+    setEditForm({
+      ...item,
+      suitableMeals: item.suitableMeals || ["Breakfast", "Lunch", "Dinner"],
+      subCategory: item.subCategory || item.subCourse || "1st Course",
+      subCourse: item.subCategory || item.subCourse || "1st Course",
+    });
   };
 
   const saveEdit = async (id: string) => {
@@ -173,9 +183,12 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
     setPermissionBlocked(false);
     try {
       const docRef = doc(db, "menu_items", id);
+      const finalSubCategory = editForm.category === "Main Course" ? (editForm.subCategory || editForm.subCourse || "1st Course") : "";
       await updateDoc(docRef, {
         title: editForm.title.trim(),
         category: editForm.category || availableCategories[0] || "Main Course",
+        subCategory: finalSubCategory,
+        subCourse: finalSubCategory,
         price: editForm.price.trim(),
         description: editForm.description ? editForm.description.trim() : "",
         suitableMeals: editForm.suitableMeals || ["Breakfast", "Lunch", "Dinner"],
@@ -425,11 +438,11 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
         </div>
       )}
 
-      {/* A. Form Scroll & Save Button Visibility Fix: Left Column wrapped in max-h and custom-scrollbar */}
-      <div className="lg:col-span-1 bg-[#18181B] border border-white/5 w-full max-w-full overflow-hidden p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl lg:sticky lg:top-28 max-h-[85vh] lg:max-h-[calc(100vh-180px)] overflow-y-auto pr-2 custom-scrollbar">
+      {/* Compact Form Container: Overhauled layout with CSS Grid to eliminate vertical scrolling on laptop screens */}
+      <div className="lg:col-span-1 bg-[#18181B] border border-white/10 w-full max-w-full overflow-hidden p-4 rounded-2xl shadow-2xl lg:sticky lg:top-24 max-h-[92vh] overflow-y-auto custom-scrollbar">
         <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
-          <div className="flex items-center gap-2 text-[#D4AF37] font-semibold text-xs uppercase tracking-widest">
-            <Utensils className="w-4 h-4" /> Culinary Catalogue
+          <div className="flex items-center gap-1.5 text-[#D4AF37] font-bold text-[11px] uppercase tracking-widest">
+            <Utensils className="w-3.5 h-3.5" /> Culinary Catalogue
           </div>
           <button
             type="button"
@@ -442,113 +455,139 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
           </button>
         </div>
 
-        <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight mb-4 md:mb-6">Create Menu Dish</h3>
+        <h3 className="text-lg md:text-xl font-bold text-white tracking-tight mb-3">Create Menu Dish</h3>
         
-        <form onSubmit={handleAddDish} className="space-y-3.5 md:space-y-5 w-full max-w-full">
-          <div className="w-full">
-            <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
-              Dish Title
-            </label>
-            <input
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Malabar Fish Curry & Appam"
-              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3.5 py-2.5 md:px-4 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 md:gap-4 w-full">
-            <div className="w-full">
-              <label className="flex items-center justify-between gap-1 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
-                <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5 text-[#D4AF37]" /> Category</span>
+        <form onSubmit={handleAddDish} className="space-y-3 w-full max-w-full text-xs">
+          {/* Row 1: Item Name & Price side-by-side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+            <div>
+              <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+                Item Name
               </label>
-              {/* Dynamic Category <select> integration */}
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3 py-2.5 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors cursor-pointer"
-              >
-                {availableCategories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Malabar Fish Curry"
+                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs transition-colors font-semibold"
+              />
             </div>
 
-            <div className="w-full">
-              <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
-                <DollarSign className="w-3.5 h-3.5 text-[#D4AF37]" /> Price / Unit
+            <div>
+              <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+                <DollarSign className="w-3.5 h-3.5 text-[#D4AF37]" /> Price
               </label>
               <input
                 type="text"
                 required
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="₹350 / head"
-                className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3.5 py-2.5 md:px-3 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors"
+                placeholder="₹250 / plate"
+                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs transition-colors font-semibold"
               />
             </div>
           </div>
 
-          <div className="w-full">
-            <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5 md:mb-2">
-              <FileText className="w-3.5 h-3.5 text-[#D4AF37]" /> Tasting Notes / Ingredients
-            </label>
-            <textarea
-              required
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Fresh sear fish simmered in rich coconut milk with heirloom Kerala spices..."
-              className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-3.5 py-2.5 md:px-4 md:py-3 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors resize-none"
-            />
-          </div>
+          {/* Row 2: Category (with Main Course Sub-Course Selector) & Meal Types side-by-side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full items-start">
+            <div>
+              <label className="flex items-center justify-between gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+                <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5 text-[#D4AF37]" /> Category</span>
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs transition-colors cursor-pointer font-semibold"
+              >
+                {availableCategories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
 
-          {/* Suitable For (Meal Types) Checkboxes */}
-          <div className="w-full">
-            <label className="flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              <Utensils className="w-3.5 h-3.5 text-[#D4AF37]" /> Suitable For (Meal Types)
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {["Breakfast", "Lunch", "Dinner"].map((meal) => {
-                const isSelected = suitableMeals.includes(meal);
-                return (
-                  <div
-                    key={meal}
-                    onClick={() => toggleSuitableMeal(meal)}
-                    className={`px-3 py-2 rounded-xl border text-xs font-bold flex items-center justify-between cursor-pointer transition-all ${
-                      isSelected
-                        ? "bg-[#D4AF37]/15 border-[#D4AF37] text-[#D4AF37]"
-                        : "bg-[#0D0D0D] border-white/10 text-gray-400 hover:border-white/20"
-                    }`}
-                  >
-                    <span>{meal}</span>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => {}}
-                      className="w-3.5 h-3.5 accent-[#D4AF37] rounded cursor-pointer pointer-events-none"
-                    />
+              {/* Conditional Rendering: Main Course Sub-Category selector */}
+              {category === "Main Course" && (
+                <div className="mt-2 animate-fadeIn bg-[#0D0D0D] p-2 rounded-xl border border-[#D4AF37]/30">
+                  <label className="block text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider mb-1.5">Select Course</label>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {["1st Course", "2nd Course"].map((course) => (
+                      <button
+                        key={course}
+                        type="button"
+                        onClick={() => setSubCategory(course)}
+                        className={`py-1.5 px-2 rounded-lg border text-[11px] font-extrabold transition-all cursor-pointer ${
+                          subCategory === course
+                            ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-sm"
+                            : "bg-[#18181B] text-gray-400 border-white/10 hover:text-white"
+                        }`}
+                      >
+                        {course}
+                      </button>
+                    ))}
                   </div>
-                );
-              })}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+                <Utensils className="w-3.5 h-3.5 text-[#D4AF37]" /> Meal Types
+              </label>
+              <div className="grid grid-cols-3 gap-1">
+                {["Breakfast", "Lunch", "Dinner"].map((meal) => {
+                  const isSelected = suitableMeals.includes(meal);
+                  return (
+                    <label
+                      key={meal}
+                      onClick={(e) => { e.preventDefault(); toggleSuitableMeal(meal); }}
+                      className={`py-1.5 px-1 rounded-lg border text-[10px] font-bold flex flex-col sm:flex-row items-center justify-center gap-1 cursor-pointer transition-all select-none ${
+                        isSelected
+                          ? "bg-[#D4AF37]/20 border-[#D4AF37] text-[#D4AF37] font-extrabold"
+                          : "bg-[#0D0D0D] border-white/10 text-gray-400 hover:text-gray-200 hover:border-white/20"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        readOnly
+                        className="w-2.5 h-2.5 accent-[#D4AF37] rounded cursor-pointer pointer-events-none shrink-0"
+                      />
+                      <span className="truncate">{meal === "Breakfast" ? "Brkfst" : meal}</span>
+                    </label>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Cloudinary CDN Image Upload Widget */}
-          <div className="pt-2">
-            <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-              Dish Photography (annacaterers Vault)
+          {/* Row 3: Tasting Notes / Description textarea in 2 rows */}
+          <div className="w-full">
+            <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+              <FileText className="w-3.5 h-3.5 text-[#D4AF37]" /> Tasting Notes / Description
+            </label>
+            <textarea
+              required
+              rows={2}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Fresh sear fish simmered in coconut milk with heirloom Kerala spices..."
+              className="w-full bg-[#0D0D0D] border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs transition-colors resize-none"
+            />
+          </div>
+
+          {/* Row 4: Compact Cloudinary Image Upload */}
+          <div className="pt-1">
+            <label className="block text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1">
+              Dish Photography (Vault)
             </label>
             {imageUrl ? (
-              <div className="relative rounded-xl overflow-hidden h-36 w-full border border-[#D4AF37]/50 mb-3 group">
+              <div className="relative rounded-xl overflow-hidden h-24 w-full border border-[#D4AF37]/50 mb-2 group">
                 <img src={imageUrl} alt="Dish preview" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <button
                     type="button"
                     onClick={() => { setImageUrl(""); setImagePublicId(""); }}
-                    className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold cursor-pointer"
+                    className="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-bold cursor-pointer"
                   >
                     Remove Image
                   </button>
@@ -574,7 +613,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                   <button
                     type="button"
                     onClick={() => open()}
-                    className="w-full py-3.5 px-4 bg-[#0D0D0D] border border-dashed border-[#D4AF37]/60 text-[#D4AF37] rounded-xl hover:bg-[#D4AF37]/10 transition-all font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-2.5 px-3 bg-[#0D0D0D] border border-dashed border-[#D4AF37]/60 text-[#D4AF37] rounded-xl hover:bg-[#D4AF37]/10 transition-all font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Upload Dish Photography →</span>
                   </button>
@@ -586,9 +625,9 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-4 rounded-full bg-[#D4AF37] text-black font-extrabold text-sm uppercase tracking-wider hover:bg-[#b5952f] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#D4AF37]/15 disabled:opacity-50 mt-4"
+            className="w-full py-3 rounded-full bg-[#D4AF37] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#b5952f] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#D4AF37]/15 disabled:opacity-50 mt-2"
           >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-5 h-5 stroke-[2.5]" />}
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4 stroke-[3]" />}
             <span>+ Save to Menu Catalogue</span>
           </button>
         </form>
@@ -683,7 +722,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/80 backdrop-blur-md text-[#D4AF37] text-[10px] font-extrabold tracking-wider border border-[#D4AF37]/30 uppercase">
-                        {item.category}
+                        {item.category} {(item.subCategory || item.subCourse) ? `• ${item.subCategory || item.subCourse}` : ""}
                       </div>
                     </div>
                   )}
@@ -712,6 +751,30 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                             className="bg-[#0D0D0D] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-[#D4AF37] font-semibold"
                           />
                         </div>
+                        {editForm.category === "Main Course" && (
+                          <div className="bg-[#0D0D0D] p-2 rounded-xl border border-[#D4AF37]/30">
+                            <label className="block text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider mb-1">Select Course</label>
+                            <div className="grid grid-cols-2 gap-1.5">
+                              {["1st Course", "2nd Course"].map((course) => {
+                                const isSelected = (editForm.subCategory || editForm.subCourse || "1st Course") === course;
+                                return (
+                                  <button
+                                    key={course}
+                                    type="button"
+                                    onClick={() => setEditForm({ ...editForm, subCategory: course, subCourse: course })}
+                                    className={`py-1 px-2 rounded-lg border text-[11px] font-extrabold transition-all cursor-pointer ${
+                                      isSelected
+                                        ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-sm"
+                                        : "bg-[#18181B] text-gray-400 border-white/10 hover:text-white"
+                                    }`}
+                                  >
+                                    {course}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                         <textarea
                           rows={2}
                           value={editForm.description || ""}
