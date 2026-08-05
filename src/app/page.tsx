@@ -2,8 +2,6 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FloatingActions from "@/components/FloatingActions";
 import About from "@/components/About";
-import DetailedAbout from "@/components/DetailedAbout";
-import Services from "@/components/Services";
 import Gallery from "@/components/Gallery";
 import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";

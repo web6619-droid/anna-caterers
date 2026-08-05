@@ -82,6 +82,7 @@ export default function Reviews() {
     });
 
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-Rotation Interval (Rotates every 2.5 seconds continuously)

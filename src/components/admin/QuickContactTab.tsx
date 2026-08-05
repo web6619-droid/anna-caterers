@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { GlobalSettings } from "@/types/admin";
-import { Phone, MessageSquare, Share2, MapPin, Save, Loader2, Globe, Sparkles, ShieldAlert, Copy, Check, Mail } from "lucide-react";
+import { Phone, MessageSquare, Share2, MapPin, Save, Loader2, Globe, ShieldAlert, Copy, Check, Mail } from "lucide-react";
 
 interface QuickContactTabProps {
   showToast: (type: "success" | "error" | "info", message: string) => void;

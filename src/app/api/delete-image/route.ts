@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     try {
       await adminAuth.verifyIdToken(token);
-    } catch (err) {
+    } catch {
       return NextResponse.json({ error: "Unauthorized: Expired or invalid admin session" }, { status: 401 });
     }
 

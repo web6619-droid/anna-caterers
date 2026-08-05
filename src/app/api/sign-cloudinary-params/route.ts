@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       }
       try {
         await adminAuth.verifyIdToken(token);
-      } catch (authError) {
+      } catch {
         if (process.env.NODE_ENV === "production") {
           return NextResponse.json({ error: "Unauthorized: Invalid or expired session token" }, { status: 401 });
         }

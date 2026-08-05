@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -5,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { MenuItem, Category } from "@/types/admin";
 import { defaultMenu } from "@/data/defaultCatalogue";
-import { Plus, Trash2, Edit3, Save, X, Utensils, Loader2, DollarSign, FileText, Tag, Filter, ShieldAlert, Copy, Check, FolderOpen, Layers } from "lucide-react";
+import { Plus, Trash2, Edit3, X, Utensils, Loader2, DollarSign, FileText, Tag, Filter, ShieldAlert, Copy, Check, Layers } from "lucide-react";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 interface MenuManagerTabProps {
@@ -84,6 +85,7 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
     });
 
     return () => unsubscribeCat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2. Subscribe to menu_items collection (with backward compat read/sync)

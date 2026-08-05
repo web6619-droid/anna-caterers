@@ -1,22 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import CountUp from "react-countup";
 
 function StatCounter({ end, decimals = 0, suffix = "", duration = 2 }: { end: number; decimals?: number; suffix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-20px" });
+
   return (
-    <CountUp 
-      start={0} 
-      end={end} 
-      decimals={decimals} 
-      duration={duration} 
-      separator="" 
-      suffix={suffix} 
-      enableScrollSpy={true}
-      scrollSpyOnce={true}
-    />
+    <span ref={ref}>
+      {isInView ? (
+        <CountUp start={0} end={end} decimals={decimals} duration={duration} separator="" suffix={suffix} />
+      ) : (
+        `0${suffix}`
+      )}
+    </span>
   );
 }
 
