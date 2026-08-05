@@ -44,7 +44,13 @@ export function BookingModalProvider({ children }: { children: ReactNode }) {
         const q = query(collection(db, "services"), orderBy("createdAt", "desc"));
         const snapshot = await getDocs(q);
         if (!snapshot.empty) {
-          const names = snapshot.docs.map((doc) => doc.data().title || "Custom Service");
+          const docs = snapshot.docs.map((doc) => doc.data());
+          docs.sort((a, b) => {
+            if (a.isPinned && !b.isPinned) return -1;
+            if (!a.isPinned && b.isPinned) return 1;
+            return 0;
+          });
+          const names = docs.map((d) => d.title || "Custom Service");
           setDynamicServices(names);
           return;
         }

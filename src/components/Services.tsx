@@ -28,7 +28,12 @@ export default function Services() {
   }, []);
 
   // Uses our central array so dropdown options and service cards always match
-  const servicesToRender = dbServices.length > 0 ? dbServices : defaultServicesList;
+  const rawServices = dbServices.length > 0 ? dbServices : defaultServicesList;
+  const servicesToRender = [...rawServices].sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return 0;
+  });
 
   return (
     <section id="services" className="py-24 bg-[#0f0f0f] text-white">

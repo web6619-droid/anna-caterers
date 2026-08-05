@@ -53,6 +53,7 @@ export interface Service {
   icon?: string;
   imageUrl?: string;
   imagePublicId?: string;
+  isPinned?: boolean;
   createdAt?: any;
 }
 

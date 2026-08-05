@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { Service } from "@/types/admin";
 import { defaultServices } from "@/data/defaultCatalogue";
-import { Plus, Trash2, Edit3, Save, X, Sparkles, Loader2, DollarSign, FileText, Type, Smile, ShieldAlert, Copy, Check, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Edit3, Save, X, Sparkles, Loader2, DollarSign, FileText, Type, Smile, ShieldAlert, Copy, Check, Image as ImageIcon, Pin } from "lucide-react";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { revalidateServices } from "@/actions/revalidate";
 
@@ -29,6 +29,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
   const [emoji, setEmoji] = useState(""); // Optional emoji field, no defaults forced
   const [imageUrl, setImageUrl] = useState("");
   const [imagePublicId, setImagePublicId] = useState("");
+  const [isPinned, setIsPinned] = useState(false);
 
   // Edit form state
   const [editForm, setEditForm] = useState<Partial<Service>>({});
@@ -78,6 +79,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
         emoji: emoji ? emoji.trim() : "",
         imageUrl: imageUrl || "",
         imagePublicId: imagePublicId || "",
+        isPinned: Boolean(isPinned),
         createdAt: serverTimestamp(),
       });
       await revalidateServices();
@@ -88,6 +90,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
       setEmoji("");
       setImageUrl("");
       setImagePublicId("");
+      setIsPinned(false);
     } catch (err: any) {
       console.error(err);
       if (err?.code === "permission-denied" || err?.message?.includes("permission") || err?.message?.includes("insufficient")) {
@@ -103,7 +106,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
 
   const startEdit = (service: Service) => {
     setEditingId(service.id);
-    setEditForm({ ...service, emoji: service.emoji || service.icon || "" });
+    setEditForm({ ...service, emoji: service.emoji || service.icon || "", isPinned: Boolean(service.isPinned) });
   };
 
   const saveEdit = async (id: string) => {
@@ -117,6 +120,7 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
         description: editForm.description ? editForm.description.trim() : "",
         price: editForm.price.trim(),
         emoji: editForm.emoji ? editForm.emoji.trim() : "",
+        isPinned: Boolean(editForm.isPinned),
       });
       await revalidateServices();
       showToast("success", "Service updated successfully!");
@@ -148,9 +152,16 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
   };
 
   // Seamless fallback to storefront default catalogue when Firestore collection is fresh/empty
-  const displayServices: any[] = services.length > 0 
+  const rawServices: any[] = services.length > 0 
     ? services 
-    : defaultServices.map((s, idx) => ({ ...s, id: `default-${idx}`, isDefault: true, emoji: s.icon || "" }));
+    : defaultServices.map((s, idx) => ({ ...s, id: `default-${idx}`, isDefault: true, emoji: s.icon || "", isPinned: false }));
+
+  // Sort pinned services to the top of the list in admin as well
+  const displayServices = [...rawServices].sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return 0;
+  });
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 animate-fadeIn items-start">
@@ -219,8 +230,26 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
             </div>
           </div>
 
+          {/* Pin to top of list toggle */}
+          <div 
+            onClick={() => setIsPinned(!isPinned)}
+            className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-3 flex items-center justify-between cursor-pointer transition-colors hover:border-[#D4AF37]/50"
+          >
+            <div className="flex items-center gap-2">
+              <Pin className={`w-4 h-4 ${isPinned ? "text-[#D4AF37] fill-[#D4AF37]" : "text-gray-400"}`} />
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Pin to top of list</span>
+            </div>
+            <input
+              type="checkbox"
+              checked={isPinned}
+              onChange={(e) => setIsPinned(e.target.checked)}
+              className="w-4 h-4 accent-[#D4AF37] rounded cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+
           {/* Cloudinary CDN Image Upload Widget */}
-          <div className="pt-2">
+          <div className="pt-1">
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
               Cover Photography (Cloudinary Vault)
             </label>
@@ -368,6 +397,22 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
                       onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                       className="w-full bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-2 text-sm text-gray-300 focus:border-[#D4AF37] resize-none"
                     />
+                    <div 
+                      onClick={() => setEditForm({ ...editForm, isPinned: !editForm.isPinned })}
+                      className="bg-[#0D0D0D] border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between cursor-pointer transition-colors hover:border-[#D4AF37]/50 w-full"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Pin className={`w-4 h-4 ${editForm.isPinned ? "text-[#D4AF37] fill-[#D4AF37]" : "text-gray-400"}`} />
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-200">Pin to top of list (Priority Listing)</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(editForm.isPinned)}
+                        onChange={(e) => setEditForm({ ...editForm, isPinned: e.target.checked })}
+                        className="w-4 h-4 accent-[#D4AF37] rounded cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
                     <div className="flex justify-end gap-3 pt-2">
                       <button
                         onClick={() => setEditingId(null)}
@@ -403,9 +448,14 @@ export default function ServicesManagerTab({ showToast }: ServicesManagerTabProp
                     )}
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center flex-wrap mb-1.5">
-                        {service.emoji ? <span className="mr-2 text-xl">{service.emoji}</span> : null}
-                        <h4 className="text-xl font-bold text-white truncate mr-4">{service.title}</h4>
+                      <div className="flex items-center flex-wrap mb-1.5 gap-2">
+                        {service.emoji ? <span className="text-xl">{service.emoji}</span> : null}
+                        <h4 className="text-xl font-bold text-white truncate">{service.title}</h4>
+                        {service.isPinned && (
+                          <span title="Pinned to top (Admin Only Indicator)" className="inline-flex items-center gap-1 bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/40 text-[10px] uppercase font-extrabold px-2.5 py-0.5 rounded-md shrink-0 shadow-sm">
+                            <Pin className="w-3 h-3 fill-[#D4AF37]" /> Pinned
+                          </span>
+                        )}
                         <span className="ml-auto px-3.5 py-1 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] text-xs font-extrabold tracking-wide border border-[#D4AF37]/30 shrink-0 mt-1 sm:mt-0">
                           {service.price}
                         </span>
