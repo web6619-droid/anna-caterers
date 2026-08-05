@@ -41,6 +41,7 @@ export interface BookingContextType {
   removeFromMenu: (id: string | number) => void;
   isDishSelected: (id: string | number) => boolean;
   clearCart: () => void;
+  resetBooking: () => void;
 }
 
 const defaultUserDetails: UserDetails = {
@@ -106,6 +107,18 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setSelectedMenu([]);
   };
 
+  const resetBooking = () => {
+    setSelectedMenu([]);
+    setEventDetails({
+      eventType: "",
+      guestCount: 0,
+      eventDate: "",
+      mealType: "",
+      location: "",
+    });
+    setUserDetails(defaultUserDetails);
+  };
+
   const value: BookingContextType = {
     userDetails,
     eventDetails,
@@ -118,6 +131,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     removeFromMenu,
     isDishSelected,
     clearCart,
+    resetBooking,
   };
 
   return (

@@ -40,7 +40,7 @@ export default function MenuClient() {
   const [menuLoaded, setMenuLoaded] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
 
-  const { selectedMenu, addToMenu, removeFromMenu, isDishSelected, perGuestTotal, cartTotal, eventDetails, userDetails, clearCart } = useBooking();
+  const { selectedMenu, addToMenu, removeFromMenu, isDishSelected, perGuestTotal, cartTotal, eventDetails, userDetails, clearCart, resetBooking } = useBooking();
   const { settings } = useGlobalSettings();
   const router = useRouter();
 
@@ -133,6 +133,10 @@ export default function MenuClient() {
       router.push("/services");
     }
   }
+
+  const handleCancelBooking = () => {
+    resetBooking();
+  };
 
   // Helper to convert price strings like "₹350 / portion" into pure integers for computation
   const parsePrice = (priceStr?: string | number): number => {
@@ -404,28 +408,37 @@ export default function MenuClient() {
                 </div>
               </div>
 
-              <button
-                onClick={handleFinalizeBooking}
-                disabled={isFinalizing}
-                className={`w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2.5 shrink-0 ${
-                  isFinalizing
-                    ? "bg-gray-600 text-gray-300 cursor-not-allowed shadow-none"
-                    : "bg-[#D4AF37] text-black hover:bg-[#b5952f] hover:scale-[1.03] active:scale-95 shadow-xl shadow-[#D4AF37]/30 cursor-pointer"
-                }`}
-              >
-                {isFinalizing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin text-white" />
-                    <span>Processing...</span>
-                  </>
-                ) : (
-                  <>
-                    <MessageSquare className="w-5 h-5 fill-current text-black" />
-                    <span>Finalize Booking</span>
-                    <ArrowRight className="w-5 h-5 stroke-[2.5] text-black" />
-                  </>
-                )}
-              </button>
+              <div className="flex flex-col items-center w-full sm:w-auto shrink-0">
+                <button
+                  onClick={handleFinalizeBooking}
+                  disabled={isFinalizing}
+                  className={`w-full sm:w-auto px-7 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2.5 ${
+                    isFinalizing
+                      ? "bg-gray-600 text-gray-300 cursor-not-allowed shadow-none"
+                      : "bg-[#D4AF37] text-black hover:bg-[#b5952f] hover:scale-[1.03] active:scale-95 shadow-xl shadow-[#D4AF37]/30 cursor-pointer"
+                  }`}
+                >
+                  {isFinalizing ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin text-white" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <MessageSquare className="w-5 h-5 fill-current text-black" />
+                      <span>Finalize Booking</span>
+                      <ArrowRight className="w-5 h-5 stroke-[2.5] text-black" />
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={handleCancelBooking}
+                  type="button"
+                  className="text-xs text-neutral-400 hover:text-white underline mt-2 text-center w-full transition-colors cursor-pointer"
+                >
+                  Cancel Booking
+                </button>
+              </div>
             </div>
           </div>
         )}
