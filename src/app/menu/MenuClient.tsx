@@ -301,7 +301,7 @@ export default function MenuClient() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-20px" }}
                       transition={{ duration: 0.25, delay: index * 0.05, ease: "easeOut" }}
-                      className={`relative rounded-xl sm:rounded-[24px] overflow-hidden flex flex-col transition-all duration-300 group ${
+                      className={`relative h-auto rounded-xl sm:rounded-[24px] overflow-hidden flex flex-col transition-all duration-300 group ${
                         selected
                           ? "bg-[#1c1a13] border-2 border-[#D4AF37] shadow-[0_12px_35px_rgba(212,175,55,0.25)] -translate-y-1"
                           : "bg-[#151515] border border-white/10 hover:border-[#D4AF37]/50 hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(0,0,0,0.7)]"
@@ -352,18 +352,18 @@ export default function MenuClient() {
                           {item.isCombo && item.includedItems && item.includedItems.length > 0 && (
                             <div className="mt-1.5 sm:mt-2">
                               <span className="text-[9px] sm:text-[11px] font-bold text-[#D4AF37] uppercase tracking-wider block mb-0.5">Includes:</span>
-                              <p className="hidden sm:block text-xs text-gray-200 leading-relaxed font-medium">
+                              <p className="text-[10px] sm:text-xs text-gray-200 leading-tight sm:leading-relaxed font-medium break-words whitespace-normal">
                                 {item.includedItems.join(", ")}
                               </p>
                             </div>
                           )}
                           {item.description && !item.isCombo && (
-                            <p className="hidden sm:block text-xs text-gray-300 line-clamp-2 mt-2 leading-relaxed font-normal">
+                            <p className="text-[10px] sm:text-xs text-gray-300 line-clamp-3 sm:line-clamp-2 mt-1.5 sm:mt-2 leading-tight sm:leading-relaxed font-normal break-words whitespace-normal">
                               {item.description}
                             </p>
                           )}
                           {item.description && item.isCombo && (
-                            <p className="hidden sm:block text-[11px] text-gray-400 italic line-clamp-1 mt-1 leading-relaxed font-normal">
+                            <p className="text-[10px] sm:text-[11px] text-gray-400 italic line-clamp-2 sm:line-clamp-1 mt-1 leading-tight sm:leading-relaxed font-normal break-words whitespace-normal">
                               {item.description}
                             </p>
                           )}
@@ -394,7 +394,7 @@ export default function MenuClient() {
                               }
                             }
                           }}
-                          className={`w-full py-2 px-2 sm:py-3 sm:px-4 min-h-[38px] sm:min-h-[44px] rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-extrabold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer active:scale-[0.96] ${
+                          className={`mt-auto w-full py-2 px-2 sm:py-3 sm:px-4 min-h-[38px] sm:min-h-[44px] rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-extrabold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer active:scale-[0.96] ${
                             selected
                               ? "bg-red-500/15 border border-red-500/30 text-red-300 hover:bg-red-500 hover:text-white"
                               : "bg-[#D4AF37] text-black hover:bg-[#c49f2b] shadow-lg shadow-[#D4AF37]/15"
