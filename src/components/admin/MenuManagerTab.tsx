@@ -38,7 +38,7 @@ const DEFAULT_CATEGORIES = [
   "Main Course",
   "Dessert",
   "Kerala Traditional",
-  "Beverage",
+  "Beverages",
   "Live Station",
   "Live Counters",
   "Kerala Sadyas"
