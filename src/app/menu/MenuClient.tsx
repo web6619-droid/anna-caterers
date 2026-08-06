@@ -189,6 +189,10 @@ export default function MenuClient() {
   // Smart Contextual Sorting: Sort items suitable for the user's selected mealType to the top
   const selectedMealType = eventDetails?.mealType || "";
   const sortedAndFilteredItems = [...filteredItems].sort((a, b) => {
+    // Combos are always pinned to the top of their category
+    if (a.isCombo && !b.isCombo) return -1;
+    if (!a.isCombo && b.isCombo) return 1;
+
     if (!selectedMealType) return 0;
     const aMeals = a.suitableMeals || ["Breakfast", "Lunch", "Dinner"];
     const bMeals = b.suitableMeals || ["Breakfast", "Lunch", "Dinner"];
@@ -333,8 +337,21 @@ export default function MenuClient() {
                           <h3 className="text-white text-xs sm:text-lg font-bold leading-tight sm:leading-snug line-clamp-1 sm:line-clamp-2" title={item.title}>
                             {item.title}
                           </h3>
-                          {item.description && (
+                          {item.isCombo && item.includedItems && item.includedItems.length > 0 && (
+                            <div className="mt-1.5 sm:mt-2">
+                              <span className="text-[9px] sm:text-[11px] font-bold text-[#D4AF37] uppercase tracking-wider block mb-0.5">Includes:</span>
+                              <p className="hidden sm:block text-xs text-gray-200 leading-relaxed font-medium">
+                                {item.includedItems.join(", ")}
+                              </p>
+                            </div>
+                          )}
+                          {item.description && !item.isCombo && (
                             <p className="hidden sm:block text-xs text-gray-300 line-clamp-2 mt-2 leading-relaxed font-normal">
+                              {item.description}
+                            </p>
+                          )}
+                          {item.description && item.isCombo && (
+                            <p className="hidden sm:block text-[11px] text-gray-400 italic line-clamp-1 mt-1 leading-relaxed font-normal">
                               {item.description}
                             </p>
                           )}

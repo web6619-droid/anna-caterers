@@ -68,6 +68,8 @@ export interface MenuItem {
   imageUrl?: string;
   imagePublicId?: string;
   suitableMeals?: string[];
+  isCombo?: boolean;
+  includedItems?: string[];
   createdAt?: any;
 }
 
