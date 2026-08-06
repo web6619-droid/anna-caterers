@@ -74,6 +74,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
   const [suitableMeals, setSuitableMeals] = useState<string[]>(["Breakfast", "Lunch", "Dinner"]);
   const [isCombo, setIsCombo] = useState<boolean>(false);
   const [includedItems, setIncludedItems] = useState<string[]>([]);
+  const [hasCustomizableOptions, setHasCustomizableOptions] = useState<boolean>(false);
+  const [availableOptions, setAvailableOptions] = useState<string>("");
 
   const toggleSuitableMeal = (meal: string) => {
     setSuitableMeals((prev) =>
@@ -175,6 +177,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
         suitableMeals: suitableMeals || ["Breakfast", "Lunch", "Dinner"],
         isCombo: isCombo,
         includedItems: isCombo ? includedItems : [],
+        hasCustomizableOptions: hasCustomizableOptions,
+        availableOptions: hasCustomizableOptions ? availableOptions.trim() : "",
         createdAt: serverTimestamp(),
       });
       showToast("success", `Dish "${title}" added to the ${category} menu catalogue!`);
@@ -187,6 +191,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
       setSuitableMeals(["Breakfast", "Lunch", "Dinner"]);
       setIsCombo(false);
       setIncludedItems([]);
+      setHasCustomizableOptions(false);
+      setAvailableOptions("");
     } catch (err: any) {
       console.error(err);
       if (err?.code === "permission-denied" || err?.message?.includes("permission") || err?.message?.includes("insufficient")) {
@@ -212,6 +218,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
       subCourse: item.subCategory || item.subCourse || "1st Course",
       isCombo: item.isCombo || false,
       includedItems: item.includedItems || [],
+      hasCustomizableOptions: item.hasCustomizableOptions || false,
+      availableOptions: item.availableOptions || "",
     });
   };
 
@@ -270,6 +278,8 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
         imagePublicId: editForm.imagePublicId || "",
         isCombo: editForm.isCombo || false,
         includedItems: editForm.isCombo ? (editForm.includedItems || []) : [],
+        hasCustomizableOptions: editForm.hasCustomizableOptions || false,
+        availableOptions: editForm.hasCustomizableOptions ? (editForm.availableOptions || "").trim() : "",
       });
       showToast("success", "Dish updated successfully!");
       setEditingId(null);
@@ -548,21 +558,51 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
           </button>
         </div>
 
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-start justify-between mb-3">
           <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">Create Menu Dish</h3>
-          <label className="flex items-center gap-2 cursor-pointer bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
-            <input 
-              type="checkbox" 
-              checked={isCombo} 
-              onChange={(e) => {
-                setIsCombo(e.target.checked);
-                if (!e.target.checked) setIncludedItems([]);
-              }}
-              className="w-4 h-4 accent-[#D4AF37] cursor-pointer"
-            />
-            <span className="text-[#D4AF37] font-bold text-xs uppercase tracking-wider">Create as Combo Bundle</span>
-          </label>
+          <div className="flex flex-col gap-2 items-end">
+            <label className="flex items-center gap-2 cursor-pointer bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+              <input 
+                type="checkbox" 
+                checked={isCombo} 
+                onChange={(e) => {
+                  setIsCombo(e.target.checked);
+                  if (!e.target.checked) setIncludedItems([]);
+                }}
+                className="w-4 h-4 accent-[#D4AF37] cursor-pointer"
+              />
+              <span className="text-[#D4AF37] font-bold text-xs uppercase tracking-wider">Create as Combo Bundle</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+              <input 
+                type="checkbox" 
+                checked={hasCustomizableOptions} 
+                onChange={(e) => {
+                  setHasCustomizableOptions(e.target.checked);
+                  if (!e.target.checked) setAvailableOptions("");
+                }}
+                className="w-4 h-4 accent-[#D4AF37] cursor-pointer"
+              />
+              <span className="text-[#D4AF37] font-bold text-xs uppercase tracking-wider">Customizable Options</span>
+            </label>
+          </div>
         </div>
+        
+        {hasCustomizableOptions && (
+          <div className="w-full mb-3">
+            <label className="flex items-center gap-1 font-semibold text-gray-300 uppercase tracking-wider mb-1 text-[11px]">
+              Available Options (comma separated)
+            </label>
+            <input
+              type="text"
+              required={hasCustomizableOptions}
+              value={availableOptions}
+              onChange={(e) => setAvailableOptions(e.target.value)}
+              placeholder="e.g. Manga Curry, Fish Vattichathu, Chicken 65"
+              className="w-full bg-[#0D0D0D] border border-[#D4AF37]/50 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-[#D4AF37] text-xs md:text-sm transition-colors font-semibold"
+            />
+          </div>
+        )}
         
         <form onSubmit={handleAddDish} className="space-y-3.5 w-full max-w-full text-xs">
           {/* Item Name */}
@@ -971,6 +1011,32 @@ export default function MenuManagerTab({ showToast }: MenuManagerTabProps) {
                                 <span className="text-gray-500 italic text-xs">No regular dishes available in {editForm.category}.</span>
                               )}
                             </div>
+                          </div>
+                        )}
+                        <label className="flex items-center space-x-2 text-[#D4AF37] font-bold text-xs mt-3 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={editForm.hasCustomizableOptions || false}
+                            onChange={(e) => {
+                              setEditForm({ 
+                                ...editForm, 
+                                hasCustomizableOptions: e.target.checked,
+                                availableOptions: e.target.checked ? editForm.availableOptions : ""
+                              });
+                            }}
+                            className="accent-[#D4AF37] w-3.5 h-3.5"
+                          />
+                          <span>Customizable Options</span>
+                        </label>
+                        {editForm.hasCustomizableOptions && (
+                          <div className="mt-2">
+                            <input
+                              type="text"
+                              value={editForm.availableOptions || ""}
+                              onChange={(e) => setEditForm({ ...editForm, availableOptions: e.target.value })}
+                              placeholder="e.g. Manga Curry, Fish Vattichathu"
+                              className="w-full bg-[#0D0D0D] border border-[#D4AF37]/50 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none"
+                            />
                           </div>
                         )}
                         <textarea

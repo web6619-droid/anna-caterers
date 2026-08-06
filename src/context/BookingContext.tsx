@@ -26,6 +26,7 @@ export interface SelectedMenuItem {
   category: string;
   imageUrl?: string;
   description?: string;
+  selectedOptions?: string[];
   [key: string]: any;
 }
 

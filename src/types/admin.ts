@@ -70,6 +70,8 @@ export interface MenuItem {
   suitableMeals?: string[];
   isCombo?: boolean;
   includedItems?: string[];
+  hasCustomizableOptions?: boolean;
+  availableOptions?: string;
   createdAt?: any;
 }
 

@@ -40,6 +40,8 @@ export default function MenuClient() {
   const [dbItems, setDbItems] = useState<MenuItem[]>([]);
   const [menuLoaded, setMenuLoaded] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
+  const [selectedCustomOptions, setSelectedCustomOptions] = useState<string[]>([]);
 
   const { selectedMenu, addToMenu, removeFromMenu, isDishSelected, perGuestTotal, cartTotal, eventDetails, userDetails, clearCart, resetBooking } = useBooking();
   const { settings } = useGlobalSettings();
@@ -111,7 +113,10 @@ export default function MenuClient() {
         : (eventDetails.eventDate || "To be scheduled");
 
       const dishesFormatted = selectedMenu
-        .map((item, index) => `  ${index + 1}. *${item.name}* (${item.rawPrice || `₹${item.price}`}) - _[${item.category}]_`)
+        .map((item, index) => {
+          const selectedOps = item.selectedOptions && item.selectedOptions.length > 0 ? ` (Selected: ${item.selectedOptions.join(", ")})` : "";
+          return `  ${index + 1}. *${item.name}* (${item.rawPrice || `₹${item.price}`}) - _[${item.category}]_${selectedOps}`;
+        })
         .join("\n");
 
       let messageText = `*New Luxury Catering Booking Request!*\n\n` +
@@ -319,6 +324,13 @@ export default function MenuClient() {
                           </div>
                         )}
 
+                        {/* Customizable Badge */}
+                        {item.hasCustomizableOptions && !selected && (
+                          <div className="absolute bottom-2 right-2 px-2 py-1 rounded-md bg-[#D4AF37]/90 text-black text-[9px] sm:text-[10px] font-black tracking-wider shadow-md backdrop-blur-sm z-10">
+                            ⭐ CUSTOMIZABLE
+                          </div>
+                        )}
+
                         {/* Selected Indicator Pill */}
                         {selected && (
                           <div className="absolute top-1.5 left-1.5 sm:top-3.5 sm:left-3.5 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-[#D4AF37] text-black text-[8px] sm:text-[11px] font-extrabold flex items-center gap-0.5 sm:gap-1 shadow-lg z-10 animate-in fade-in zoom-in">
@@ -364,17 +376,22 @@ export default function MenuClient() {
                             if (selected) {
                               removeFromMenu(item.id);
                             } else {
-                              const parsedPrice = parsePrice(item.price);
-                              const selectedItem: SelectedMenuItem = {
-                                id: item.id,
-                                name: item.title,
-                                price: parsedPrice,
-                                category: item.category,
-                                imageUrl: item.imageUrl,
-                                description: item.description,
-                                rawPrice: typeof item.price === "number" ? `₹${item.price}${item.unit ? ` / ${item.unit}` : ""}` : item.price,
-                              };
-                              addToMenu(selectedItem);
+                              if (item.hasCustomizableOptions && item.availableOptions) {
+                                setCustomizingItem(item);
+                                setSelectedCustomOptions([]);
+                              } else {
+                                const parsedPrice = parsePrice(item.price);
+                                const selectedItem: SelectedMenuItem = {
+                                  id: item.id,
+                                  name: item.title,
+                                  price: parsedPrice,
+                                  category: item.category,
+                                  imageUrl: item.imageUrl,
+                                  description: item.description,
+                                  rawPrice: typeof item.price === "number" ? `₹${item.price}${item.unit ? ` / ${item.unit}` : ""}` : item.price,
+                                };
+                                addToMenu(selectedItem);
+                              }
                             }
                           }}
                           className={`w-full py-2 px-2 sm:py-3 sm:px-4 min-h-[38px] sm:min-h-[44px] rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-extrabold uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer active:scale-[0.96] ${
@@ -463,6 +480,73 @@ export default function MenuClient() {
                   className="text-xs text-neutral-400 hover:text-white underline mt-2 py-1 text-center w-full transition-colors cursor-pointer"
                 >
                   Cancel Booking
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Custom Options Modal */}
+        {customizingItem && customizingItem.availableOptions && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div 
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              onClick={() => setCustomizingItem(null)}
+            />
+            <div className="relative bg-[#151515] border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 animate-in fade-in zoom-in duration-200">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-white mb-2">Customize {customizingItem.title}</h3>
+                <p className="text-gray-400 text-xs leading-relaxed">Select your preferred options or sides for this item.</p>
+              </div>
+
+              <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                {customizingItem.availableOptions.split(",").map((opt) => opt.trim()).filter(Boolean).map((optionStr, i) => (
+                  <label key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors group">
+                    <span className="text-white text-sm font-semibold">{optionStr}</span>
+                    <input 
+                      type="checkbox"
+                      checked={selectedCustomOptions.includes(optionStr)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedCustomOptions([...selectedCustomOptions, optionStr]);
+                        } else {
+                          setSelectedCustomOptions(selectedCustomOptions.filter(o => o !== optionStr));
+                        }
+                      }}
+                      className="w-5 h-5 accent-[#D4AF37] cursor-pointer"
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <div className="mt-8 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setCustomizingItem(null)}
+                  className="px-4 py-3 rounded-xl bg-white/5 text-white font-bold text-sm w-full hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const parsedPrice = parsePrice(customizingItem.price);
+                    const selectedItem: SelectedMenuItem = {
+                      id: customizingItem.id,
+                      name: customizingItem.title,
+                      price: parsedPrice,
+                      category: customizingItem.category,
+                      imageUrl: customizingItem.imageUrl,
+                      description: customizingItem.description,
+                      selectedOptions: selectedCustomOptions,
+                      rawPrice: typeof customizingItem.price === "number" ? `₹${customizingItem.price}${customizingItem.unit ? ` / ${customizingItem.unit}` : ""}` : customizingItem.price,
+                    };
+                    addToMenu(selectedItem);
+                    setCustomizingItem(null);
+                  }}
+                  className="px-4 py-3 rounded-xl bg-[#D4AF37] text-black font-extrabold text-sm w-full shadow-lg shadow-[#D4AF37]/20 hover:bg-[#c49f2b] transition-colors cursor-pointer"
+                >
+                  Add to Menu
                 </button>
               </div>
             </div>
