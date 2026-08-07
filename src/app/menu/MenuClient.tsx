@@ -42,6 +42,7 @@ export default function MenuClient() {
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
   const [selectedCustomOptions, setSelectedCustomOptions] = useState<string[]>([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const { selectedMenu, addToMenu, removeFromMenu, isDishSelected, perGuestTotal, cartTotal, eventDetails, userDetails, clearCart, resetBooking } = useBooking();
   const { settings } = useGlobalSettings();
@@ -74,6 +75,40 @@ export default function MenuClient() {
     };
   }, []);
 
+  function buildOrderText() {
+    const dateFormatted = eventDetails.eventDate instanceof Date
+      ? eventDetails.eventDate.toLocaleDateString()
+      : (eventDetails.eventDate || "To be scheduled");
+
+    const dishesFormatted = selectedMenu
+      .map((item, index) => {
+        const selectedOps = item.selectedOptions && item.selectedOptions.length > 0 ? ` (Selected: ${item.selectedOptions.join(", ")})` : "";
+        return `  ${index + 1}. *${item.name}* (${item.rawPrice || `₹${item.price}`}) - _[${item.category}]_${selectedOps}`;
+      })
+      .join("\n");
+
+    let messageText = `*New Luxury Catering Booking Request!*\n\n` +
+      `*Client Contact:*\n` +
+      `• Name: ${userDetails.name || "Guest Client"}\n` +
+      `• Phone: ${userDetails.phone || "Not provided"}\n`;
+
+    if (userDetails.notes) {
+      messageText += `• Special Notes: ${userDetails.notes}\n`;
+    }
+
+    messageText += `\n*Event Parameters:*\n` +
+      `• Occasion Type: ${eventDetails.eventType}\n` +
+      `• Event Date: ${dateFormatted}\n` +
+      `• Meal Service: ${eventDetails.mealType}\n` +
+      `• Expected Guests: ${eventDetails.guestCount || 100} guests\n\n` +
+      `*Investment Summary:*\n` +
+      `• Rate Per Plate: ₹${perGuestTotal.toLocaleString("en-IN")}\n` +
+      `• *Estimated Total: ₹${cartTotal.toLocaleString("en-IN")}*\n\n` +
+      `*Curated Feast Menu (${selectedMenu.length} dishes):*\n${dishesFormatted}`;
+      
+    return messageText;
+  }
+
   // Phase 4 & Edge-Case Guard: Firestore Database Sync & WhatsApp Handoff
   async function handleFinalizeBooking() {
     if (selectedMenu.length === 0 || isFinalizing) return;
@@ -101,51 +136,43 @@ export default function MenuClient() {
       console.log("Booking successfully synced to event_bookings collection.");
     } catch (error) {
       console.warn("Notice: Offline or Firestore rule restriction prevented DB sync, proceeding to WhatsApp handoff:", error);
-    } finally {
-      setIsFinalizing(false);
+    } 
 
-      // 2. Format concise, readable WhatsApp summary
-      // NOTE: Replace fallback number with your client's live WhatsApp phone number!
-      const targetPhone = (settings?.whatsappNumber || "919847598053").replace(/\D/g, "");
+    const messageText = buildOrderText();
 
-      const dateFormatted = eventDetails.eventDate instanceof Date
-        ? eventDetails.eventDate.toLocaleDateString()
-        : (eventDetails.eventDate || "To be scheduled");
-
-      const dishesFormatted = selectedMenu
-        .map((item, index) => {
-          const selectedOps = item.selectedOptions && item.selectedOptions.length > 0 ? ` (Selected: ${item.selectedOptions.join(", ")})` : "";
-          return `  ${index + 1}. *${item.name}* (${item.rawPrice || `₹${item.price}`}) - _[${item.category}]_${selectedOps}`;
-        })
-        .join("\n");
-
-      let messageText = `*New Luxury Catering Booking Request!*\n\n` +
-        `*Client Contact:*\n` +
-        `• Name: ${userDetails.name || "Guest Client"}\n` +
-        `• Phone: ${userDetails.phone || "Not provided"}\n`;
-
-      if (userDetails.notes) {
-        messageText += `• Special Notes: ${userDetails.notes}\n`;
+    if (settings?.useAutomatedWhatsApp) {
+      try {
+        const response = await fetch('/api/notify-owner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderText: messageText }),
+        });
+        
+        if (response.ok) {
+          setShowConfirmModal(true);
+        } else {
+          const errData = await response.json();
+          alert("Automated WhatsApp Checkout Failed!\n\nReason: " + (errData?.error || "Unknown Error") + "\n\nPlease ensure your Twilio Sandbox is joined and Next.js dev server was restarted after saving .env variables.");
+        }
+      } catch (err: any) {
+        alert("Automated WhatsApp Checkout Failed (Network Error): " + err.message);
+      } finally {
+        setIsFinalizing(false);
       }
-
-      messageText += `\n*Event Parameters:*\n` +
-        `• Occasion Type: ${eventDetails.eventType}\n` +
-        `• Event Date: ${dateFormatted}\n` +
-        `• Meal Service: ${eventDetails.mealType}\n` +
-        `• Expected Guests: ${eventDetails.guestCount || 100} guests\n\n` +
-        `*Investment Summary:*\n` +
-        `• Rate Per Plate: ₹${perGuestTotal.toLocaleString("en-IN")}\n` +
-        `• *Estimated Total: ₹${cartTotal.toLocaleString("en-IN")}*\n\n` +
-        `*Curated Feast Menu (${selectedMenu.length} dishes):*\n${dishesFormatted}`;
-
-      const encodedMessage = encodeURIComponent(messageText);
-      const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodedMessage}`;
-
-      // 3. The Handoff: Open chat link, clear cart state, and return to services page
-      window.open(whatsappUrl, "_blank");
-      clearCart();
-      router.push("/services");
+    } else {
+      fallbackToWaMe(messageText);
+      setIsFinalizing(false);
     }
+  }
+
+  function fallbackToWaMe(messageText: string) {
+    const targetPhone = (settings?.whatsappNumber || "919847598053").replace(/\D/g, "");
+    const encodedMessage = encodeURIComponent(messageText);
+    const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, "_blank");
+    clearCart();
+    router.push("/services");
   }
 
   const handleCancelBooking = () => {
@@ -317,12 +344,7 @@ export default function MenuClient() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#151515] via-transparent to-black/30 opacity-60" />
 
-                        {/* Price Badge */}
-                        {item.price && (
-                          <div className="absolute top-1.5 right-1.5 sm:top-3.5 sm:right-3.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black/85 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-[10px] sm:text-xs font-black z-10 shadow-md">
-                            {typeof item.price === "number" ? `₹${item.price}${item.unit ? ` / ${item.unit}` : ""}` : item.price}
-                          </div>
-                        )}
+
 
                         {/* Customizable Badge */}
                         {item.hasCustomizableOptions && !selected && (
@@ -436,14 +458,9 @@ export default function MenuClient() {
                     <span className="text-white font-extrabold text-sm sm:text-lg tracking-tight">
                       {selectedMenu.length} {selectedMenu.length === 1 ? "Dish" : "Dishes"} Selected
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-[#D4AF37] text-xs font-black tracking-wide border border-[#D4AF37]/20">
-                      ₹{perGuestTotal.toLocaleString("en-IN")} / plate
-                    </span>
+
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-gray-300 font-bold text-xs sm:text-sm">
-                      Estimated Total: <span className="text-[#D4AF37] font-extrabold">₹{cartTotal.toLocaleString("en-IN")}</span>
-                    </span>
                     <span className="text-gray-500 text-[11px] font-semibold">
                       ({eventDetails.guestCount || 100} guests)
                     </span>
@@ -549,6 +566,36 @@ export default function MenuClient() {
                   Add to Menu
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Booking Confirmed Modal */}
+        {showConfirmModal && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div 
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            <div className="relative bg-[#151515] border-2 border-[#D4AF37]/50 rounded-3xl p-8 w-full max-w-md shadow-[0_20px_70px_rgba(212,175,55,0.15)] z-10 animate-in fade-in zoom-in-95 duration-300 text-center flex flex-col items-center">
+              <div className="w-20 h-20 bg-green-500/20 border-2 border-green-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+                <Check className="w-10 h-10 text-green-400 stroke-[3]" />
+              </div>
+              <h2 className="text-3xl font-extrabold text-white mb-3">Booking <span className="text-[#D4AF37] font-serif italic">Confirmed!</span></h2>
+              <p className="text-gray-300 text-sm leading-relaxed mb-8">
+                Your luxury catering request has been successfully processed. Our team will contact you shortly to discuss further details and confirm the arrangement.
+              </p>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  clearCart();
+                  router.push("/services");
+                }}
+                className="w-full py-4 rounded-xl bg-[#D4AF37] text-black font-extrabold text-sm uppercase tracking-widest shadow-lg shadow-[#D4AF37]/20 hover:bg-[#c49f2b] transition-all cursor-pointer active:scale-95"
+              >
+                Return to Services
+              </button>
             </div>
           </div>
         )}

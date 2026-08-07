@@ -80,11 +80,7 @@ export default function Services() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#151515] to-transparent opacity-80" />
                 
-                {service.price && (
-                  <div className="absolute top-1.5 right-1.5 sm:top-3 sm:right-3 md:top-4 md:right-4 bg-[#1a1a1a]/85 backdrop-blur-sm border border-gold/30 text-gold px-2 py-0.5 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs md:text-sm font-semibold tracking-wide z-10 shadow-md">
-                    {service.price}
-                  </div>
-                )}
+
               </div>
               
               {/* Card Body */}
